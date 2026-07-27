@@ -8,3 +8,4 @@ node_modules/
 # tatsaechlich verwendeten Kopien (robin-daniel.jpg, axel-wehmeier.jpg) gehoeren ins Repo.
 assets/bilder/Auswahl Robin Kopie/
 assets/bilder/Robin Kopie.JPG
+.env*

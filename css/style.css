@@ -898,6 +898,15 @@ input[type="range"] {
   margin-top: var(--sp-4);
 }
 
+.legal-page ul {
+  margin: 0 0 var(--sp-2);
+  padding-left: var(--sp-3);
+}
+
+.legal-page li {
+  margin-bottom: var(--sp-1);
+}
+
 .placeholder {
   background: rgba(203, 142, 73, 0.12);
   border: 1px dashed var(--color-messing);
