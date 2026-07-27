@@ -8,9 +8,12 @@
   // Muss mit den Default-Werten im Finanzierungsrechner (js/calculator.js) uebereinstimmen,
   // damit "durchschnittliche Rate" auf der ganzen Seite dieselbe Bedeutung hat: 10 Jahre
   // Zinsbindung (3,7 %) + 2 % anfaengliche Tilgung, Nebenkosten NRW (Briefing 4a.1).
+  // Auf Kundenwunsch wird die Durchschnittskalkulation zusaetzlich mit 20 % Eigenkapital
+  // (bezogen auf den Kaufpreis) gerechnet, statt einer Vollfinanzierung.
   var ZINSSATZ = 3.7;
   var TILGUNG = 2;
   var NEBENKOSTEN_SATZ = 0.065 + 0.0175 + 0.0357;
+  var EIGENKAPITAL_ANTEIL = 0.2;
 
   var euroFormatter = new Intl.NumberFormat("de-DE", {
     style: "currency",
@@ -19,7 +22,9 @@
   });
 
   function monatlicheRate(kaufpreis) {
-    var darlehen = kaufpreis * (1 + NEBENKOSTEN_SATZ);
+    var nebenkosten = kaufpreis * NEBENKOSTEN_SATZ;
+    var eigenkapital = kaufpreis * EIGENKAPITAL_ANTEIL;
+    var darlehen = Math.max(0, kaufpreis + nebenkosten - eigenkapital);
     return (darlehen * (ZINSSATZ + TILGUNG)) / 100 / 12;
   }
 
@@ -83,7 +88,7 @@
       var disclaimer = document.createElement("p");
       disclaimer.className = "small top-slider-disclaimer";
       disclaimer.textContent =
-        "*Unverbindlicher Richtwert bei 10 Jahren Zinsbindung (3,7 %) und 2 % anfänglicher Tilgung, inkl. Kaufnebenkosten NRW.";
+        "*Unverbindlicher Richtwert bei 20 % Eigenkapital, 10 Jahren Zinsbindung (3,7 %) und 2 % anfänglicher Tilgung, inkl. Kaufnebenkosten NRW.";
       track.parentElement.parentElement.appendChild(disclaimer);
     })
     .catch(function () {

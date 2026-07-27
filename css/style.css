@@ -401,13 +401,17 @@ p {
 }
 
 .top-card-meta {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--color-asche-text);
   margin: 0;
 }
 
+/* Nur die Rate-Zahl traegt IBM Plex Mono (das "Hero-Element" der Karte, analog zur
+   Ergebniskarte im Rechner) -- Titel und Meta-Zeile bewusst einheitlich in Inter, statt bei
+   jeder Zeile die Schriftfamilie zu wechseln. */
 .top-card-title {
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
   color: var(--color-walnuss);
