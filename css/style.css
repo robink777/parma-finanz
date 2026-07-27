@@ -1,0 +1,922 @@
+/* ===========================================================
+   Parma Finanz — Landingpage
+   CI: Reinweiß/Stein tragen die Fläche, Walnuss nur Text/Linien,
+   Messing max. 1x pro Sichtbereich. Spacing-Skala: 8·16·24·40·64·104
+   =========================================================== */
+
+:root {
+  /* Primärpalette */
+  --color-walnuss: #503f3d;
+  --color-messing: #cb8e49;
+  --color-stein: #f2f1ed;
+  --color-reinweiss: #fcfcfb;
+
+  /* Sekundär-/Neutralpalette */
+  --color-anthrazit: #2a2624;
+  --color-asche: #a9a29a;
+  --color-sand: #e1d6c1;
+  --color-tinte: #1b1413;
+  /* Dunklere, textsichere Variante von Asche (~5,6:1 auf Reinweiß statt ~2,5:1) --
+     Asche selbst ist laut CI-Referenz für Linien/Hilfstext gedacht, nicht für
+     lesbaren Fließtext; wird u.a. für den Rechner-Disclaimer gebraucht. */
+  --color-asche-text: #6b655f;
+
+  /* Typografie */
+  --font-headline: "Roboto Slab", serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Spacing-Skala (px) */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 40px;
+  --sp-5: 64px;
+  --sp-6: 104px;
+
+  /* Grid-Außenrand nach Viewport */
+  --gutter: 24px;
+  --edge: 80px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 20px;
+    --edge: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --gutter: 16px;
+    --edge: 32px;
+  }
+}
+
+@media (max-width: 375px) {
+  :root {
+    --edge: 16px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-reinweiss);
+  color: var(--color-anthrazit);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: var(--edge);
+  padding-right: var(--edge);
+}
+
+section {
+  padding-top: var(--sp-5);
+  padding-bottom: var(--sp-5);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-headline);
+  color: var(--color-walnuss);
+  margin: 0 0 var(--sp-3);
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 800;
+  font-size: clamp(40px, 6vw, 88px);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: clamp(30px, 4vw, 56px);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: clamp(22px, 2.6vw, 32px);
+  letter-spacing: -0.006em;
+}
+
+h4 {
+  font-weight: 600;
+  font-size: 22px;
+}
+
+/* Kartentitel, die semantisch h3 sein müssen (Überschriften-Hierarchie), aber die
+   kompaktere h4-Größe behalten sollen (z.B. Vorteils-Karten unter einem H2). */
+.card-title {
+  font-weight: 600;
+  font-size: 22px;
+}
+
+p {
+  margin: 0 0 var(--sp-2);
+}
+
+.lead {
+  font-family: var(--font-headline);
+  font-weight: 400;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.36;
+  color: var(--color-walnuss);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* Walnuss statt Messing: reines Messing auf Reinweiß/Stein liegt bei ~2,7:1 Kontrast und
+     reißt WCAG AA (4,5:1) für Fließtext. Walnuss (12,7:1) ist zugleich die CI-konforme
+     Textfarbe und hält "Messing max. 1x pro Sichtbereich" strikter ein (nur noch der jeweilige
+     CTA-Button trägt Messing). */
+  color: var(--color-walnuss);
+}
+
+.small {
+  font-size: 13px;
+  /* Dunklere Variante statt reinem Asche (#A9A29A auf Reinweiß liegt bei ~2,5:1) --
+     betrifft u.a. den rechtlich wichtigen Rechner-Disclaimer, der lesbar sein muss. */
+  color: var(--color-asche-text);
+  line-height: 1.54;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  font-family: var(--font-body);
+  /* 700/19px statt 600/16px: Walnuss-auf-Messing (.btn-primary) liegt nur bei ~3,54:1 --
+     das reicht für WCAG AA nur, wenn der Text als "groß" zählt (≥18,66px fett = 3:1 statt 4,5:1). */
+  font-weight: 700;
+  font-size: 19px;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--color-messing);
+  /* Walnuss statt Reinweiß: Reinweiß-Text auf Messing liegt bei ~2,7:1 Kontrast (reißt AA).
+     Walnuss auf Messing sind die 4,8:1 aus der CI-Referenz selbst (Abschnitt "Kontrast (WCAG)"). */
+  color: var(--color-walnuss);
+}
+
+.btn-primary:hover {
+  background: #b87c38;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-walnuss);
+  border-color: var(--color-walnuss);
+}
+
+.btn-secondary:hover {
+  background: var(--color-stein);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(252, 252, 251, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-sand);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--sp-2);
+  padding-bottom: var(--sp-2);
+}
+
+.site-header .logo img {
+  height: 40px;
+  width: auto;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.site-nav a {
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--color-walnuss);
+}
+
+@media (max-width: 768px) {
+  .site-nav a:not(.btn) {
+    display: none;
+  }
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding-top: var(--sp-6);
+  padding-bottom: var(--sp-6);
+}
+
+.hero .container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-5);
+  align-items: center;
+}
+
+@media (min-width: 1025px) {
+  .hero .container {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.hero-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--color-walnuss);
+  background: var(--color-stein);
+  border-radius: 4px;
+  padding: 6px var(--sp-2);
+}
+
+.hero-visual {
+  background: var(--color-stein);
+  border-radius: 8px;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.hero-visual img {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* ---------- Vorteile ---------- */
+
+.advantages-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+@media (min-width: 769px) {
+  .advantages-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.advantage-card {
+  background: var(--color-stein);
+  border-radius: 8px;
+  padding: var(--sp-3);
+}
+
+.advantage-card .icon {
+  margin-bottom: var(--sp-2);
+}
+
+.advantage-card .card-title {
+  margin-bottom: var(--sp-1);
+}
+
+.advantage-card p {
+  font-size: 14px;
+  color: var(--color-walnuss);
+  margin: 0;
+}
+
+/* ---------- Kombinationsvorteil ---------- */
+
+.combo-section {
+  background: var(--color-stein);
+}
+
+.combo-section .container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  align-items: center;
+}
+
+@media (min-width: 1025px) {
+  .combo-section .container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.combo-logos {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.combo-logos img {
+  height: 32px;
+  width: auto;
+}
+
+.combo-logos .plus {
+  font-family: var(--font-mono);
+  color: var(--color-messing);
+  font-size: 20px;
+}
+
+/* ---------- Rechner ---------- */
+
+.calculator {
+  background: var(--color-reinweiss);
+}
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+@media (min-width: 1025px) {
+  .calculator-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+.calc-inputs {
+  background: var(--color-stein);
+  border-radius: 8px;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.calc-tabs {
+  display: flex;
+  gap: var(--sp-1);
+  background: var(--color-reinweiss);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.calc-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-walnuss);
+}
+
+.calc-tab[aria-selected="true"] {
+  background: var(--color-walnuss);
+  color: var(--color-reinweiss);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-walnuss);
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="tel"],
+.field input[type="email"],
+.field select,
+.field textarea {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-anthrazit);
+  background: var(--color-reinweiss);
+  border: 1px solid var(--color-sand);
+  border-radius: 4px;
+  padding: var(--sp-2);
+  width: 100%;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid var(--color-messing);
+  outline-offset: 1px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 480px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+input[type="range"] {
+  flex: 1;
+  height: 44px;
+  accent-color: var(--color-messing);
+}
+
+.slider-value {
+  font-family: var(--font-mono);
+  min-width: 56px;
+  text-align: right;
+}
+
+.zinsbindung-group {
+  display: flex;
+  gap: var(--sp-1);
+}
+
+.zinsbindung-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 44px;
+  padding: var(--sp-1) var(--sp-2);
+  border: 1px solid var(--color-sand);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.zinsbindung-option input {
+  display: none;
+}
+
+.zinsbindung-option.active {
+  border-color: var(--color-messing);
+  background: rgba(203, 142, 73, 0.12);
+}
+
+.calc-result {
+  background: var(--color-walnuss);
+  color: var(--color-reinweiss);
+  border-radius: 8px;
+  padding: var(--sp-4);
+}
+
+@media (min-width: 1025px) {
+  .calc-result {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+.calc-result .label {
+  color: var(--color-sand);
+}
+
+.result-rate {
+  font-family: var(--font-mono);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 500;
+  margin: var(--sp-1) 0 var(--sp-3);
+}
+
+.result-rate span {
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.result-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  border-top: 1px solid rgba(252, 252, 251, 0.2);
+  padding-top: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.result-row .value {
+  font-family: var(--font-mono);
+}
+
+.calc-result .btn-primary {
+  width: 100%;
+  margin-top: var(--sp-2);
+}
+
+.calc-disclaimer {
+  font-size: 12px;
+  /* Sitzt auf dem dunklen Walnuss-Ergebnis-Card-Hintergrund -- Sand (bereits als
+     .calc-result .label-Farbe etabliert, ~6,9:1) statt Asche (dort nur ~3,9:1). */
+  color: var(--color-sand);
+  margin-top: var(--sp-3);
+}
+
+/* ---------- Objektauswahl ---------- */
+
+.estate-picker {
+  position: relative;
+}
+
+.estate-picker input {
+  width: 100%;
+}
+
+.estate-results {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--color-reinweiss);
+  border: 1px solid var(--color-sand);
+  border-radius: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(42, 38, 36, 0.12);
+}
+
+.estate-results[hidden] {
+  display: none;
+}
+
+.estate-results-heading {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-walnuss);
+  background: var(--color-stein);
+  padding: var(--sp-1) var(--sp-2);
+}
+
+.estate-result {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-2);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-anthrazit);
+  border-bottom: 1px solid var(--color-stein);
+}
+
+.estate-result:hover {
+  background: var(--color-stein);
+}
+
+.estate-result-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--color-stein);
+}
+
+.estate-result-thumb-empty {
+  border: 1px solid var(--color-sand);
+}
+
+.estate-result-text {
+  flex: 1;
+}
+
+.estate-result .price {
+  font-family: var(--font-mono);
+  color: var(--color-walnuss);
+  white-space: nowrap;
+}
+
+.estate-picker-status {
+  font-size: 13px;
+  color: var(--color-asche-text);
+}
+
+/* ---------- Standorte ---------- */
+
+.locations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+@media (min-width: 769px) {
+  .locations-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.location-card {
+  border: 1px solid var(--color-sand);
+  border-radius: 8px;
+  padding: var(--sp-3);
+}
+
+/* ---------- Ansprechpartner ---------- */
+
+.contact-person-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  align-items: center;
+}
+
+@media (min-width: 769px) {
+  .contact-person-grid {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+.contact-person-photo {
+  width: 240px;
+  height: 240px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: top center;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .contact-person-photo {
+    margin: 0;
+  }
+}
+
+.contact-person h3 {
+  margin-bottom: var(--sp-1);
+}
+
+/* ---------- Kontaktformular ---------- */
+
+.contact-section {
+  background: var(--color-stein);
+}
+
+.contact-form {
+  max-width: 560px;
+  margin: var(--sp-4) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  background: var(--color-reinweiss);
+  border-radius: 8px;
+  padding: var(--sp-4);
+}
+
+.contact-context {
+  background: var(--color-stein);
+  border-radius: 6px;
+  padding: var(--sp-2);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--color-walnuss);
+}
+
+.contact-context[hidden] {
+  display: none;
+}
+
+.form-status {
+  font-size: 14px;
+  min-height: 20px;
+}
+
+.form-status[data-state="success"] {
+  color: #3d6b4f;
+}
+
+.form-status[data-state="error"] {
+  color: #a1382f;
+}
+
+/* ---------- Social Proof ---------- */
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+@media (min-width: 769px) {
+  .proof-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.proof-card {
+  background: var(--color-stein);
+  border-radius: 8px;
+  padding: var(--sp-3);
+}
+
+.proof-card .stars {
+  color: var(--color-messing);
+  font-family: var(--font-mono);
+  margin-bottom: var(--sp-1);
+}
+
+/* ---------- FAQ ---------- */
+
+.faq-item {
+  border-bottom: 1px solid var(--color-sand);
+}
+
+.faq-item summary {
+  font-family: var(--font-headline);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-walnuss);
+  padding: var(--sp-3) 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  float: right;
+  font-family: var(--font-mono);
+}
+
+.faq-item[open] summary::after {
+  content: "–";
+}
+
+.faq-item p {
+  padding-bottom: var(--sp-3);
+  color: var(--color-anthrazit);
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  background: var(--color-reinweiss);
+  border-top: 1px solid var(--color-sand);
+  padding-top: var(--sp-4);
+  padding-bottom: var(--sp-4);
+}
+
+.site-footer .container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.footer-logo img {
+  height: 32px;
+  margin-bottom: var(--sp-2);
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: var(--color-walnuss);
+}
+
+.footer-bottom {
+  font-size: 13px;
+  color: var(--color-asche-text);
+}
+
+/* ---------- Legal pages (Impressum/Datenschutz) ---------- */
+
+.legal-page main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--edge);
+}
+
+.legal-page h2 {
+  margin-top: var(--sp-4);
+}
+
+.placeholder {
+  background: rgba(203, 142, 73, 0.12);
+  border: 1px dashed var(--color-messing);
+  border-radius: 6px;
+  padding: var(--sp-2);
+  font-size: 14px;
+}
+
+/* ---------- Utility ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.section-intro {
+  max-width: 640px;
+}

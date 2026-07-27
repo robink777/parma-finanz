@@ -1,0 +1,12 @@
+{
+  "name": "parma-finanz-landingpage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-Page-Landingpage für Parma Finanz mit onOffice-API-Anbindung (Objektauswahl im Finanzierungsrechner, Lead-Übertragung aus dem Kontaktformular).",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
