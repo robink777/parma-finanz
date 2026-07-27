@@ -1,44 +1,9 @@
-const { buildAction, callOnOffice, getRecords } = require("../lib/onoffice");
+const { buildAction, callOnOffice, getRecords, fetchEstateImages } = require("../lib/onoffice");
 
 const ACTION_READ = "urn:onoffice-de-ns:smart:2.5:smartml:action:read";
-const ACTION_GET = "urn:onoffice-de-ns:smart:2.5:smartml:action:get";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 let cache = { data: null, expiresAt: 0 };
-
-// Bilder sind kein Feld des Estate-Datensatzes, sondern ein eigener Resourcetype
-// ("estatepictures"). Live gegen den Account geprueft: jedes "record" traegt "elements" als
-// ARRAY (ein einzelnes Bildobjekt {estateid, type, url}), NICHT als Feld-Objekt wie bei
-// estate/address -- getRecords()/extractElements() aus lib/onoffice.js sind hier absichtlich
-// NICHT einsetzbar, da sie mehrere Bildobjekte faelschlich zu einem verschmelzen wuerden.
-async function fetchTitleImages(estateIds) {
-  if (!estateIds.length) return {};
-
-  const action = buildAction({
-    actionid: ACTION_GET,
-    resourcetype: "estatepictures",
-    cacheable: true,
-    parameters: {
-      estateids: estateIds.map(Number),
-      categories: ["Titelbild", "Foto"],
-      size: "120x120",
-      language: "DEU",
-    },
-  });
-
-  const results = await callOnOffice([action]);
-  const records = results[0]?.data?.records || [];
-  const pictures = records.flatMap((r) => (Array.isArray(r.elements) ? r.elements : []));
-
-  const map = {};
-  for (const id of estateIds) {
-    const idStr = String(id);
-    const picsForEstate = pictures.filter((p) => String(p.estateid) === idStr);
-    const titelbild = picsForEstate.find((p) => p.type === "Titelbild") || picsForEstate[0];
-    if (titelbild) map[idStr] = titelbild.url;
-  }
-  return map;
-}
 
 async function fetchPublishedEstates() {
   // "status" (Status 1) = "1" ist das echte Aktiv-Flag in diesem Account (live geprueft: 109
@@ -92,7 +57,7 @@ async function fetchPublishedEstates() {
   // lassen.
   let images = {};
   try {
-    images = await fetchTitleImages(estates.map((e) => e.id));
+    images = await fetchEstateImages(estates.map((e) => e.id));
   } catch (err) {
     console.error("api/estates: Titelbilder konnten nicht geladen werden:", err);
   }

@@ -16,10 +16,15 @@ function loadEnv(file) {
 }
 loadEnv(".env");
 
-const estatesHandler = require("../api/estates");
-const leadHandler = require("../api/lead");
-
 const ROOT = path.join(__dirname, "..");
+
+// Laedt automatisch jede Datei aus /api als Handler fuer /api/<dateiname> -- spart es, hier
+// jede neue Serverless-Function (aktuell estates, lead, top-estates) einzeln eintragen zu muessen.
+const apiHandlers = {};
+for (const file of fs.readdirSync(path.join(ROOT, "api"))) {
+  if (!file.endsWith(".js")) continue;
+  apiHandlers["/api/" + file.replace(/\.js$/, "")] = require(path.join(ROOT, "api", file));
+}
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css",
@@ -45,12 +50,12 @@ const server = http.createServer(async (req, res) => {
   enhanceResponse(res);
   const url = new URL(req.url, "http://localhost");
 
-  if (url.pathname === "/api/estates") {
-    req.query = Object.fromEntries(url.searchParams);
-    return estatesHandler(req, res);
-  }
-
-  if (url.pathname === "/api/lead") {
+  const apiHandler = apiHandlers[url.pathname];
+  if (apiHandler) {
+    if (req.method === "GET") {
+      req.query = Object.fromEntries(url.searchParams);
+      return apiHandler(req, res);
+    }
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", async () => {
@@ -59,7 +64,7 @@ const server = http.createServer(async (req, res) => {
       } catch (e) {
         req.body = {};
       }
-      await leadHandler(req, res);
+      await apiHandler(req, res);
     });
     return;
   }
