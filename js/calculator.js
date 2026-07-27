@@ -219,7 +219,7 @@
       btn.className = "estate-result";
       btn.innerHTML =
         (estate.image
-          ? "<img class=\"estate-result-thumb\" src=\"" + escapeHtml(estate.image) + "\" alt=\"\" loading=\"lazy\" />"
+          ? "<img class=\"estate-result-thumb\" src=\"" + escapeHtml(estate.image) + "\" alt=\"\" />"
           : "<span class=\"estate-result-thumb estate-result-thumb-empty\" aria-hidden=\"true\"></span>") +
         "<span class=\"estate-result-text\">" +
         escapeHtml(estate.title) +
