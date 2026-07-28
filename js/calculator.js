@@ -23,11 +23,22 @@
   var zinsbindungGroup = document.getElementById("zinsbindung-group");
 
   var resultRate = document.getElementById("result-rate");
+  var resultRateSub = document.getElementById("result-rate-sub");
+  var resultKaufpreis = document.getElementById("result-kaufpreis");
   var resultNebenkosten = document.getElementById("result-nebenkosten");
-  var resultFinanzierungsbedarf = document.getElementById("result-finanzierungsbedarf");
+  var resultNebenkostenPercent = document.getElementById("result-nebenkosten-percent");
+  var resultGrunderwerbsteuer = document.getElementById("result-grunderwerbsteuer");
+  var resultNotar = document.getElementById("result-notar");
+  var resultCourtage = document.getElementById("result-courtage");
+  var resultEigenkapital = document.getElementById("result-eigenkapital");
+  var resultEigenkapitalPercent = document.getElementById("result-eigenkapital-percent");
   var resultDarlehen = document.getElementById("result-darlehen");
   var resultRestschuld = document.getElementById("result-restschuld");
   var resultLaufzeit = document.getElementById("result-laufzeit");
+  var splitZinsenBar = document.getElementById("split-zinsen-bar");
+  var splitTilgungBar = document.getElementById("split-tilgung-bar");
+  var splitZinsenValue = document.getElementById("split-zinsen-value");
+  var splitTilgungValue = document.getElementById("split-tilgung-value");
   var ctaAngebot = document.getElementById("cta-angebot");
   var contactContext = document.getElementById("contact-context");
 
@@ -95,19 +106,49 @@
     var zins = activeZinssatz();
     var zinsbindung = activeZinsbindung();
 
-    var nebenkosten = kaufpreis * NEBENKOSTEN_SATZ;
+    var grunderwerbsteuer = kaufpreis * GRUNDERWERBSTEUER;
+    var notarGrundbuch = kaufpreis * NOTAR_GRUNDBUCH;
+    var courtage = kaufpreis * COURTAGE;
+    var nebenkosten = grunderwerbsteuer + notarGrundbuch + courtage;
     var finanzierungsbedarf = kaufpreis + nebenkosten;
     var darlehen = Math.max(0, finanzierungsbedarf - eigenkapital);
     var monatsrate = (darlehen * (zins + tilgung)) / 100 / 12;
     var restschuld = restschuldNachZinsbindung(darlehen, zins, tilgung, zinsbindung);
     var laufzeitMonate = gesamtlaufzeitMonate(darlehen, zins, tilgung);
 
-    resultRate.innerHTML = euroFormatter.format(monatsrate) + " <span>/Monat</span>";
-    resultNebenkosten.textContent = euroFormatter.format(nebenkosten);
-    resultFinanzierungsbedarf.textContent = euroFormatter.format(finanzierungsbedarf);
+    var zinsanteil = (darlehen * zins) / 100 / 12;
+    var tilgungsanteil = Math.max(0, monatsrate - zinsanteil);
+    var zinsanteilProzent = monatsrate > 0 ? (zinsanteil / monatsrate) * 100 : 0;
+    var tilgungsanteilProzent = monatsrate > 0 ? 100 - zinsanteilProzent : 0;
+
+    resultRate.innerHTML = euroFormatter.format(monatsrate) + " <span>pro Monat</span>";
+    resultRateSub.textContent =
+      "bei " +
+      zins.toFixed(1).replace(".", ",") +
+      " % Zinssatz (" +
+      zinsbindung +
+      " Jahre Zinsbindung) und " +
+      tilgung.toFixed(1).replace(".", ",") +
+      " % anfänglicher Tilgung";
+
+    resultKaufpreis.textContent = euroFormatter.format(kaufpreis);
+    resultNebenkosten.textContent = "+" + euroFormatter.format(nebenkosten);
+    resultNebenkostenPercent.textContent = "(" + (NEBENKOSTEN_SATZ * 100).toFixed(1).replace(".", ",") + " %)";
+    resultGrunderwerbsteuer.textContent = "+" + euroFormatter.format(grunderwerbsteuer);
+    resultNotar.textContent = "+" + euroFormatter.format(notarGrundbuch);
+    resultCourtage.textContent = "+" + euroFormatter.format(courtage);
+    resultEigenkapital.textContent = "–" + euroFormatter.format(eigenkapital);
+    resultEigenkapitalPercent.textContent =
+      "(" + (kaufpreis > 0 ? ((eigenkapital / kaufpreis) * 100).toFixed(0) : "0") + " %)";
     resultDarlehen.textContent = euroFormatter.format(darlehen);
     resultRestschuld.textContent = euroFormatter.format(restschuld);
     resultLaufzeit.textContent = formatJahreMonate(laufzeitMonate);
+
+    splitZinsenBar.style.width = zinsanteilProzent + "%";
+    splitTilgungBar.style.width = tilgungsanteilProzent + "%";
+    splitZinsenValue.textContent = euroFormatter.format(zinsanteil) + " (" + zinsanteilProzent.toFixed(0) + " %)";
+    splitTilgungValue.textContent =
+      euroFormatter.format(tilgungsanteil) + " (" + tilgungsanteilProzent.toFixed(0) + " %)";
 
     var contextText =
       "Rechner-Ergebnis: Kaufpreis " +

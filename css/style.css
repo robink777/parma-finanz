@@ -657,67 +657,205 @@ input[type="range"] {
   background: rgba(203, 142, 73, 0.12);
 }
 
-.calc-result {
-  background: var(--color-walnuss);
-  color: var(--color-reinweiss);
-  border-radius: 8px;
-  padding: var(--sp-4);
+/* ---------- Rechner-Ergebnis: nummerierte Schritte (Kaufpreisuebersicht / Rate) ---------- */
+
+.calc-result-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
 }
 
 @media (min-width: 1025px) {
-  .calc-result {
+  .calc-result-steps {
     position: sticky;
     top: 96px;
   }
 }
 
-.calc-result .label {
-  color: var(--color-sand);
+.calc-step {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: stretch;
 }
 
-.result-rate {
-  font-family: var(--font-mono);
-  font-size: clamp(36px, 5vw, 56px);
-  font-weight: 500;
-  margin: var(--sp-1) 0 var(--sp-3);
-}
-
-.result-rate span {
-  font-size: 18px;
-  font-weight: 400;
-  opacity: 0.7;
-}
-
-.result-rows {
+.calc-step-rail {
+  flex-shrink: 0;
+  width: 32px;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
-  border-top: 1px solid rgba(252, 252, 251, 0.2);
-  padding-top: var(--sp-3);
+  align-items: center;
+}
+
+.calc-step-marker {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-stein);
+  border: 1px solid var(--color-sand);
+  color: var(--color-walnuss);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calc-step-line {
+  flex: 1;
+  width: 1px;
+  background: var(--color-sand);
+  margin: var(--sp-1) 0;
+}
+
+.calc-step-card {
+  flex: 1;
+  background: var(--color-reinweiss);
+  border: 1px solid var(--color-sand);
+  border-radius: 8px;
+  padding: var(--sp-3);
+  min-width: 0;
+}
+
+.calc-step-card h3 {
+  font-size: 18px;
+  margin-bottom: var(--sp-2);
+}
+
+.calc-line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 6px 0;
+  font-size: 15px;
+  color: var(--color-anthrazit);
+}
+
+.calc-line .value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-walnuss);
+  white-space: nowrap;
+}
+
+.calc-line-percent {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-asche-text);
+}
+
+.calc-line-sub {
+  font-weight: 600;
+}
+
+.calc-line-detail {
+  padding-left: var(--sp-3);
+  font-size: 13px;
+  color: var(--color-asche-text);
+}
+
+.calc-line-detail .value {
+  font-weight: 400;
+  color: var(--color-asche-text);
+}
+
+.calc-divider {
+  border: none;
+  border-top: 1px solid var(--color-sand);
+  margin: var(--sp-2) 0;
+}
+
+.calc-line-total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.calc-line-total .value {
+  font-size: 18px;
+}
+
+.calc-rate-big {
+  font-family: var(--font-mono);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 600;
+  color: var(--color-walnuss);
+  margin: var(--sp-1) 0 4px;
+}
+
+.calc-rate-big span {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-asche-text);
+}
+
+.calc-rate-sub {
+  font-size: 13px;
+  color: var(--color-asche-text);
+  margin: 0 0 var(--sp-3);
+}
+
+.calc-split-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--color-stein);
+  margin-bottom: var(--sp-1);
+}
+
+.calc-split-zinsen {
+  background: var(--color-messing);
+}
+
+.calc-split-tilgung {
+  background: var(--color-walnuss);
+}
+
+.calc-split-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-walnuss);
+}
+
+.calc-split-values {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-anthrazit);
   margin-bottom: var(--sp-3);
 }
 
-.result-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.result-row .value {
-  font-family: var(--font-mono);
-}
-
-.calc-result .btn-primary {
+.calc-step-card .btn-primary {
   width: 100%;
-  margin-top: var(--sp-2);
+  margin-top: var(--sp-1);
 }
 
 .calc-disclaimer {
   font-size: 12px;
-  /* Sitzt auf dem dunklen Walnuss-Ergebnis-Card-Hintergrund -- Sand (bereits als
-     .calc-result .label-Farbe etabliert, ~6,9:1) statt Asche (dort nur ~3,9:1). */
-  color: var(--color-sand);
-  margin-top: var(--sp-3);
+  color: var(--color-asche-text);
+  margin-top: var(--sp-2);
+}
+
+.calc-extra-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-asche-text);
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--color-sand);
+}
+
+.calc-extra-info strong {
+  font-family: var(--font-mono);
+  color: var(--color-walnuss);
+  font-weight: 600;
 }
 
 /* ---------- Objektauswahl ---------- */

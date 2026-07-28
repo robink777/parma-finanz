@@ -209,21 +209,86 @@
           <p class="small">Zinssätze sind unverbindliche Richtwerte (Marktdurchschnitt Stand Juli 2026), abhängig von Bonität und Beleihungsauslauf.</p>
         </div>
 
-        <div class="calc-result">
-          <p class="label">Monatliche Rate</p>
-          <p class="result-rate" id="result-rate">– <span>€/Monat</span></p>
+        <div class="calc-result-steps">
 
-          <div class="result-rows">
-            <div class="result-row"><span>Kaufnebenkosten (NRW, ca. 8–12 %)</span><span class="value" id="result-nebenkosten">–</span></div>
-            <div class="result-row"><span>Gesamtfinanzierungsbedarf</span><span class="value" id="result-finanzierungsbedarf">–</span></div>
-            <div class="result-row"><span>Darlehenssumme</span><span class="value" id="result-darlehen">–</span></div>
-            <div class="result-row"><span>Restschuld nach Zinsbindung</span><span class="value" id="result-restschuld">–</span></div>
-            <div class="result-row"><span>Voraussichtliche Gesamtlaufzeit</span><span class="value" id="result-laufzeit">–</span></div>
+          <div class="calc-step">
+            <div class="calc-step-rail">
+              <span class="calc-step-marker">1</span>
+              <span class="calc-step-line"></span>
+            </div>
+            <div class="calc-step-card">
+              <h3>Kaufpreisübersicht</h3>
+
+              <div class="calc-line">
+                <span>Kaufpreis</span>
+                <span class="value" id="result-kaufpreis">–</span>
+              </div>
+
+              <div class="calc-line calc-line-sub">
+                <span>Kaufnebenkosten <span class="calc-line-percent" id="result-nebenkosten-percent"></span></span>
+                <span class="value" id="result-nebenkosten">–</span>
+              </div>
+              <div class="calc-line calc-line-detail">
+                <span>Grunderwerbsteuer (6,5 %)</span>
+                <span class="value" id="result-grunderwerbsteuer">–</span>
+              </div>
+              <div class="calc-line calc-line-detail">
+                <span>Notar- &amp; Grundbuchgebühren (1,75 %)</span>
+                <span class="value" id="result-notar">–</span>
+              </div>
+              <div class="calc-line calc-line-detail">
+                <span>Maklercourtage (3,57 %)</span>
+                <span class="value" id="result-courtage">–</span>
+              </div>
+
+              <div class="calc-line calc-line-negative">
+                <span>Eigenkapital <span class="calc-line-percent" id="result-eigenkapital-percent"></span></span>
+                <span class="value" id="result-eigenkapital">–</span>
+              </div>
+
+              <hr class="calc-divider" />
+
+              <div class="calc-line calc-line-total">
+                <span>Zu finanzierender Betrag</span>
+                <span class="value" id="result-darlehen">–</span>
+              </div>
+            </div>
           </div>
 
-          <a href="#kontakt" class="btn btn-primary" id="cta-angebot">Persönliches Finanzierungsangebot anfragen</a>
+          <div class="calc-step">
+            <div class="calc-step-rail">
+              <span class="calc-step-marker">2</span>
+            </div>
+            <div class="calc-step-card">
+              <h3>Monatliche Finanzierungsrate</h3>
 
-          <p class="calc-disclaimer">Unverbindlicher Richtwert, keine Finanzierungszusage. Tagesaktuelle Zinsen können abweichen. Kaufnebenkosten inkl. Grunderwerbsteuer NRW (6,5 %), Notar/Grundbuch (ca. 1,5–2,0 %) und ggf. Maklercourtage (ca. 3,57 %).</p>
+              <p class="calc-rate-big" id="result-rate">– <span>pro Monat</span></p>
+              <p class="calc-rate-sub" id="result-rate-sub">–</p>
+
+              <div class="calc-split-bar">
+                <div class="calc-split-zinsen" id="split-zinsen-bar"></div>
+                <div class="calc-split-tilgung" id="split-tilgung-bar"></div>
+              </div>
+              <div class="calc-split-labels">
+                <span>Zinsen</span>
+                <span>Tilgung</span>
+              </div>
+              <div class="calc-split-values">
+                <span id="split-zinsen-value">–</span>
+                <span id="split-tilgung-value">–</span>
+              </div>
+
+              <a href="#kontakt" class="btn btn-primary btn-block" id="cta-angebot">Persönliches Finanzierungsangebot anfragen</a>
+
+              <p class="calc-disclaimer">Unverbindlicher Richtwert, keine Finanzierungszusage. Tagesaktuelle Zinsen können abweichen.</p>
+
+              <div class="calc-extra-info">
+                <span>Restschuld nach Zinsbindung: <strong id="result-restschuld">–</strong></span>
+                <span>Vorauss. Gesamtlaufzeit: <strong id="result-laufzeit">–</strong></span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </form>
     </div>
