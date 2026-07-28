@@ -542,9 +542,10 @@ p {
   }
 }
 
-.combo-callout-widget {
-  display: flex;
-  justify-content: center;
+.combo-callout-widget btm-widget {
+  display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 
