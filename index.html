@@ -406,40 +406,62 @@
       <h2>Persönliches Finanzierungsangebot anfragen</h2>
       <p class="section-intro">Antwort binnen 24 Stunden – verbindlich.</p>
 
-      <form class="contact-form" id="contact-form" novalidate>
-        <div class="contact-context" id="contact-context" hidden></div>
-
-        <div class="field">
-          <label for="c-name">Name</label>
-          <input type="text" id="c-name" name="name" required />
-        </div>
-        <div class="field-row">
+      <div class="contact-grid">
+        <form class="contact-form" id="contact-form" novalidate>
           <div class="field">
-            <label for="c-phone">Telefon</label>
-            <input type="tel" id="c-phone" name="phone" />
+            <label for="c-name">Name</label>
+            <input type="text" id="c-name" name="name" required />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="c-phone">Telefon</label>
+              <input type="tel" id="c-phone" name="phone" />
+            </div>
+            <div class="field">
+              <label for="c-email">E-Mail</label>
+              <input type="email" id="c-email" name="email" />
+            </div>
           </div>
           <div class="field">
-            <label for="c-email">E-Mail</label>
-            <input type="email" id="c-email" name="email" />
+            <label for="c-anliegen">Anliegen</label>
+            <select id="c-anliegen" name="anliegen">
+              <option value="neukauf">Neukauf</option>
+              <option value="anschlussfinanzierung">Anschlussfinanzierung</option>
+              <option value="modernisierung">Modernisierung</option>
+            </select>
+          </div>
+
+          <label class="small">
+            <input type="checkbox" id="c-consent" name="consent" required />
+            Ich stimme zu, dass meine Angaben zur Bearbeitung meiner Anfrage gespeichert und verarbeitet werden. Details in der <a href="datenschutz.html">Datenschutzerklärung</a>.
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-block">Anfrage senden</button>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="contact-offer" id="contact-offer">
+          <div class="contact-offer-image-wrap" id="contact-offer-image-wrap" hidden>
+            <img class="contact-offer-image" id="contact-offer-image" src="" alt="" />
+          </div>
+          <div class="contact-offer-body">
+            <p class="label" id="contact-offer-label">Ihre Finanzierungsanfrage</p>
+            <h3 id="contact-offer-title" hidden>–</h3>
+            <p class="small contact-offer-location" id="contact-offer-location" hidden></p>
+
+            <hr class="calc-divider" />
+
+            <div class="calc-line"><span>Kaufpreis</span><span class="value" id="offer-kaufpreis">–</span></div>
+            <div class="calc-line"><span>Eigenkapital</span><span class="value" id="offer-eigenkapital">–</span></div>
+            <div class="calc-line"><span>Zinsbindung</span><span class="value" id="offer-zinsbindung">–</span></div>
+            <div class="calc-line"><span>Anfängliche Tilgung</span><span class="value" id="offer-tilgung">–</span></div>
+
+            <hr class="calc-divider" />
+
+            <div class="calc-line calc-line-total"><span>Monatliche Rate</span><span class="value" id="offer-rate">–</span></div>
           </div>
         </div>
-        <div class="field">
-          <label for="c-anliegen">Anliegen</label>
-          <select id="c-anliegen" name="anliegen">
-            <option value="neukauf">Neukauf</option>
-            <option value="anschlussfinanzierung">Anschlussfinanzierung</option>
-            <option value="modernisierung">Modernisierung</option>
-          </select>
-        </div>
-
-        <label class="small">
-          <input type="checkbox" id="c-consent" name="consent" required />
-          Ich stimme zu, dass meine Angaben zur Bearbeitung meiner Anfrage gespeichert und verarbeitet werden. Details in der <a href="datenschutz.html">Datenschutzerklärung</a>.
-        </label>
-
-        <button type="submit" class="btn btn-primary btn-block">Anfrage senden</button>
-        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-      </form>
+      </div>
     </div>
   </section>
 

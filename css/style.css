@@ -1065,9 +1065,24 @@ input[type="range"] {
   background: var(--color-stein);
 }
 
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: stretch;
+}
+
+@media (min-width: 769px) {
+  .contact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .contact-form {
-  max-width: 560px;
-  margin: var(--sp-4) auto 0;
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
@@ -1077,17 +1092,63 @@ input[type="range"] {
   box-shadow: var(--shadow-md);
 }
 
-.contact-context {
-  background: var(--color-stein);
-  border-radius: 6px;
-  padding: var(--sp-2);
-  font-size: 13px;
-  font-family: var(--font-mono);
-  color: var(--color-walnuss);
+/* ---------- Kontakt: Angebots-Karte (Titelbild + Konditionen) ---------- */
+
+.contact-offer {
+  background: var(--color-reinweiss);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.contact-context[hidden] {
+.contact-offer-image-wrap {
+  width: 100%;
+  height: 220px;
+  background: var(--color-stein);
+  flex-shrink: 0;
+}
+
+.contact-offer-image-wrap[hidden] {
   display: none;
+}
+
+.contact-offer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.contact-offer-body {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.contact-offer-body h3 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.contact-offer-body h3[hidden] {
+  display: none;
+}
+
+.contact-offer-location {
+  margin: 0 0 var(--sp-2);
+}
+
+.contact-offer-location[hidden] {
+  display: none;
+}
+
+/* Schiebt "Monatliche Rate" ans untere Ende der Karte, falls die Kontaktformular-Spalte
+   (linke Grid-Spalte) durch mehr Felder hoeher ist als die Angebots-Karte selbst. */
+.contact-offer-body .calc-line-total {
+  margin-top: auto;
 }
 
 .form-status {

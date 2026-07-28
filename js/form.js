@@ -5,7 +5,7 @@
   if (!form) return;
 
   var status = document.getElementById("form-status");
-  var contactContext = document.getElementById("contact-context");
+  var contactOffer = document.getElementById("contact-offer");
   var submitBtn = form.querySelector('button[type="submit"]');
 
   form.addEventListener("submit", function (e) {
@@ -32,9 +32,9 @@
     }
 
     var calc = null;
-    if (contactContext && contactContext.dataset.payload) {
+    if (contactOffer && contactOffer.dataset.payload) {
       try {
-        calc = JSON.parse(contactContext.dataset.payload);
+        calc = JSON.parse(contactOffer.dataset.payload);
       } catch (err) {
         calc = null;
       }

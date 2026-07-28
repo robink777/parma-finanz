@@ -40,7 +40,24 @@
   var splitZinsenValue = document.getElementById("split-zinsen-value");
   var splitTilgungValue = document.getElementById("split-tilgung-value");
   var ctaAngebot = document.getElementById("cta-angebot");
-  var contactContext = document.getElementById("contact-context");
+
+  var offerLabel = document.getElementById("contact-offer-label");
+  var offerImageWrap = document.getElementById("contact-offer-image-wrap");
+  var offerImage = document.getElementById("contact-offer-image");
+  var offerTitle = document.getElementById("contact-offer-title");
+  var offerLocation = document.getElementById("contact-offer-location");
+  var offerKaufpreis = document.getElementById("offer-kaufpreis");
+  var offerEigenkapital = document.getElementById("offer-eigenkapital");
+  var offerZinsbindung = document.getElementById("offer-zinsbindung");
+  var offerTilgung = document.getElementById("offer-tilgung");
+  var offerRate = document.getElementById("offer-rate");
+  var contactOffer = document.getElementById("contact-offer");
+
+  // Wird beim Auswaehlen eines Objekts gesetzt (siehe Objektauswahl weiter unten) und bei
+  // manueller Kaufpreis-Aenderung wieder geloescht -- damit die Angebots-Karte kein veraltetes
+  // Objektfoto zeigt, wenn der Kaufpreis nicht mehr zu dem ausgewaehlten Objekt passt.
+  var selectedEstate = null;
+  var settingKaufpreisFromEstate = false;
 
   var tabManual = document.getElementById("tab-manual");
   var tabEstate = document.getElementById("tab-estate");
@@ -150,32 +167,46 @@
     splitTilgungValue.textContent =
       euroFormatter.format(tilgungsanteil) + " (" + tilgungsanteilProzent.toFixed(0) + " %)";
 
-    var contextText =
-      "Rechner-Ergebnis: Kaufpreis " +
-      euroFormatter.format(kaufpreis) +
-      ", Eigenkapital " +
-      euroFormatter.format(eigenkapital) +
-      ", Zinsbindung " +
-      zinsbindung +
-      " Jahre (" +
-      zins.toFixed(1) +
-      " %), Tilgung " +
-      tilgung.toFixed(1) +
-      " %, monatliche Rate ca. " +
-      euroFormatter.format(monatsrate) +
-      ".";
+    if (offerLabel) {
+      if (selectedEstate) {
+        offerLabel.textContent = "Ihr ausgewähltes Objekt";
+        offerTitle.hidden = false;
+        offerTitle.textContent = selectedEstate.title || "";
+        if (selectedEstate.city) {
+          offerLocation.hidden = false;
+          offerLocation.textContent = selectedEstate.city;
+        } else {
+          offerLocation.hidden = true;
+        }
+        if (selectedEstate.image) {
+          offerImage.src = selectedEstate.image;
+          offerImage.alt = selectedEstate.title || "";
+          offerImageWrap.hidden = false;
+        } else {
+          offerImageWrap.hidden = true;
+        }
+      } else {
+        offerLabel.textContent = "Ihre Finanzierungsanfrage";
+        offerTitle.hidden = true;
+        offerLocation.hidden = true;
+        offerImageWrap.hidden = true;
+      }
 
-    if (contactContext) {
-      contactContext.textContent = contextText;
-      contactContext.hidden = false;
-      contactContext.dataset.payload = JSON.stringify({
+      offerKaufpreis.textContent = euroFormatter.format(kaufpreis);
+      offerEigenkapital.textContent = euroFormatter.format(eigenkapital);
+      offerZinsbindung.textContent = zinsbindung + " Jahre (" + zins.toFixed(1).replace(".", ",") + " %)";
+      offerTilgung.textContent = tilgung.toFixed(1).replace(".", ",") + " %";
+      offerRate.textContent = euroFormatter.format(monatsrate) + " / Monat";
+
+      contactOffer.dataset.payload = JSON.stringify({
         kaufpreis: kaufpreis,
         eigenkapital: eigenkapital,
         zinsbindungJahre: zinsbindung,
         zinssatz: zins,
         tilgungssatz: tilgung,
         monatlicheRate: Math.round(monatsrate),
-        estateId: form.dataset.selectedEstateId || null,
+        estateId: selectedEstate ? selectedEstate.id : null,
+        estateTitle: selectedEstate ? selectedEstate.title : null,
       });
     }
   }
@@ -183,6 +214,15 @@
   form.addEventListener("input", recalculate);
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+  });
+
+  // Tippt der Nutzer den Kaufpreis nach einer Objektauswahl von Hand um, passt der Preis
+  // nicht mehr zwingend zum gezeigten Objektfoto -- Auswahl dann zuruecksetzen.
+  kaufpreisInput.addEventListener("input", function () {
+    if (!settingKaufpreisFromEstate && selectedEstate) {
+      selectedEstate = null;
+      form.dataset.selectedEstateId = "";
+    }
   });
 
   tilgungInput.addEventListener("input", function () {
@@ -269,9 +309,12 @@
         (estate.price ? euroFormatter.format(estate.price) : "–") +
         "</span>";
       btn.addEventListener("click", function () {
+        settingKaufpreisFromEstate = true;
         kaufpreisInput.value = estate.price || kaufpreisInput.value;
+        settingKaufpreisFromEstate = false;
         estateSearch.value = estate.title;
         estateResults.hidden = true;
+        selectedEstate = estate;
         form.dataset.selectedEstateId = estate.id;
         recalculate();
       });
