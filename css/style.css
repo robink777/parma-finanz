@@ -1025,6 +1025,18 @@ input[type="range"] {
   box-shadow: var(--shadow-sm);
 }
 
+.combo-callout .icon {
+  margin-bottom: var(--sp-2);
+}
+
+.combo-callout .card-title {
+  margin-bottom: var(--sp-1);
+}
+
+.combo-callout .btn {
+  margin-top: var(--sp-3);
+}
+
 /* ---------- Ansprechpartner ---------- */
 
 .contact-person-grid {
