@@ -37,6 +37,13 @@
   /* Grid-Außenrand nach Viewport */
   --gutter: 24px;
   --edge: 80px;
+
+  /* Dezente Schatten/Tiefe fuer Karten und Buttons -- warmton (walnuss-basiert statt
+     neutralem Schwarz), damit Elevation zur Palette passt statt generisch zu wirken.
+     Die CI schreibt flache Farbflaechen vor, verbietet aber keine dezente Tiefe. */
+  --shadow-sm: 0 1px 2px rgba(80, 63, 61, 0.06), 0 1px 3px rgba(80, 63, 61, 0.05);
+  --shadow-md: 0 2px 4px rgba(80, 63, 61, 0.08), 0 8px 20px rgba(80, 63, 61, 0.09);
+  --shadow-lg: 0 4px 8px rgba(80, 63, 61, 0.1), 0 14px 32px rgba(80, 63, 61, 0.14);
 }
 
 @media (max-width: 1024px) {
@@ -181,11 +188,12 @@ p {
   font-weight: 700;
   font-size: 19px;
   padding: var(--sp-2) var(--sp-3);
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .btn-primary {
@@ -193,20 +201,37 @@ p {
   /* Walnuss statt Reinweiß: Reinweiß-Text auf Messing liegt bei ~2,7:1 Kontrast (reißt AA).
      Walnuss auf Messing sind die 4,8:1 aus der CI-Referenz selbst (Abschnitt "Kontrast (WCAG)"). */
   color: var(--color-walnuss);
+  box-shadow: 0 1px 2px rgba(80, 63, 61, 0.14), 0 6px 16px rgba(203, 142, 73, 0.38);
 }
 
 .btn-primary:hover {
   background: #b87c38;
+  box-shadow: 0 2px 4px rgba(80, 63, 61, 0.18), 0 10px 24px rgba(203, 142, 73, 0.48);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(80, 63, 61, 0.14), 0 4px 10px rgba(203, 142, 73, 0.32);
 }
 
 .btn-secondary {
-  background: transparent;
+  background: var(--color-reinweiss);
   color: var(--color-walnuss);
-  border-color: var(--color-walnuss);
+  border-color: var(--color-sand);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
   background: var(--color-stein);
+  border-color: var(--color-walnuss);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-block {
@@ -369,10 +394,17 @@ p {
   flex: 0 0 280px;
   scroll-snap-align: start;
   background: var(--color-stein);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.top-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
 }
 
 .top-card-image {
@@ -434,9 +466,25 @@ p {
   margin-top: var(--sp-2);
 }
 
+.top-angebote-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+@media (min-width: 769px) {
+  .top-angebote-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--sp-4);
+  }
+}
+
 .top-angebote-cta {
-  margin: var(--sp-4) 0 0;
-  text-align: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* ---------- Vorteile ---------- */
@@ -456,8 +504,9 @@ p {
 
 .advantage-card {
   background: var(--color-stein);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: var(--sp-3);
+  box-shadow: var(--shadow-sm);
 }
 
 .advantage-card .icon {
@@ -591,16 +640,18 @@ p {
   color: var(--color-anthrazit);
   background: var(--color-reinweiss);
   border: 1px solid var(--color-sand);
-  border-radius: 4px;
+  border-radius: 6px;
   padding: var(--sp-2);
   width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  outline: 2px solid var(--color-messing);
-  outline-offset: 1px;
+  outline: 3px solid transparent;
+  border-color: var(--color-messing);
+  box-shadow: 0 0 0 3px rgba(203, 142, 73, 0.22);
 }
 
 .field-row {
@@ -718,9 +769,10 @@ input[type="range"] {
   flex: 1;
   background: var(--color-reinweiss);
   border: 1px solid var(--color-sand);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: var(--sp-3);
   min-width: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .calc-step-card h3 {
@@ -967,8 +1019,10 @@ input[type="range"] {
 
 .location-card {
   border: 1px solid var(--color-sand);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: var(--sp-3);
+  background: var(--color-reinweiss);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ---------- Ansprechpartner ---------- */
@@ -1018,8 +1072,9 @@ input[type="range"] {
   flex-direction: column;
   gap: var(--sp-2);
   background: var(--color-reinweiss);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: var(--sp-4);
+  box-shadow: var(--shadow-md);
 }
 
 .contact-context {
@@ -1065,8 +1120,9 @@ input[type="range"] {
 
 .proof-card {
   background: var(--color-stein);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: var(--sp-3);
+  box-shadow: var(--shadow-sm);
 }
 
 .proof-card .stars {
