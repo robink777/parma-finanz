@@ -434,6 +434,11 @@ p {
   margin-top: var(--sp-2);
 }
 
+.top-angebote-cta {
+  margin: var(--sp-4) 0 0;
+  text-align: center;
+}
+
 /* ---------- Vorteile ---------- */
 
 .advantages-grid {
