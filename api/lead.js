@@ -70,7 +70,13 @@ module.exports = async (req, res) => {
         email: email || undefined,
         phone: phone || undefined,
         default_phone: phone || undefined,
-        noOverrideByDuplicate: true,
+        // checkDuplicate aktiviert die Dublettenpruefung ueberhaupt erst (onOffice prueft
+        // standardmaessig auf "email"; im Enterprise-Account ggf. zusaetzliche Kriterien).
+        // noOverrideByDuplicate bewusst NICHT gesetzt (Default false): wird eine Dublette
+        // gefunden, wird der bestehende Kontakt mit den neuen Angaben aktualisiert statt
+        // unveraendert zu bleiben -- bei einer erneuten Anfrage sind z.B. Telefonnummer/E-Mail
+        // dann aktuell.
+        checkDuplicate: true,
       },
     });
 

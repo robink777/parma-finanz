@@ -62,7 +62,7 @@
       "</h4>" +
       '<a class="btn btn-secondary btn-block" href="' +
       escapeHtml(estate.link) +
-      '" target="_blank" rel="noopener">Zum Objekt bei Parma Immobilien</a>' +
+      '" target="_blank" rel="noopener">Zum Exposé</a>' +
       "</div>";
 
     return card;
