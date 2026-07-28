@@ -530,16 +530,30 @@ p {
 }
 
 .combo-section .container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-4);
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
 }
 
-@media (min-width: 1025px) {
-  .combo-section .container {
-    grid-template-columns: 1fr 1fr;
-  }
+.combo-intro {
+  max-width: 720px;
+}
+
+.combo-callout {
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.combo-callout .icon {
+  display: flex;
+  justify-content: center;
+}
+
+.combo-callout-widget {
+  display: flex;
+  justify-content: center;
 }
 
 .combo-logos {
@@ -1034,6 +1048,10 @@ input[type="range"] {
 }
 
 .combo-callout .btn {
+  margin-top: var(--sp-3);
+}
+
+.combo-callout-widget {
   margin-top: var(--sp-3);
 }
 
