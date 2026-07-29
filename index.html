@@ -188,12 +188,13 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="field" id="kaufpreis-field">
             <label for="kaufpreis">Kaufpreis</label>
             <div class="currency-input-row">
               <input type="text" id="kaufpreis" name="kaufpreis" inputmode="numeric" autocomplete="off" value="350000" required />
               <span class="currency-suffix">€</span>
             </div>
+            <p class="small" id="kaufpreis-hint" hidden>Aus der Objektauswahl übernommen.</p>
           </div>
 
           <div class="field">
@@ -221,6 +222,14 @@
             <div class="slider-row">
               <input type="range" id="tilgung" name="tilgung" min="1" max="5" step="0.1" value="2" />
               <span class="slider-value" id="tilgung-value">2,0 %</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="zins">Zinssatz</label>
+            <div class="slider-row">
+              <input type="range" id="zins" name="zins" min="0.5" max="7" step="0.1" value="3.7" />
+              <span class="slider-value" id="zins-value">3,7 %</span>
             </div>
           </div>
 

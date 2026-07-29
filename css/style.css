@@ -715,16 +715,19 @@ input[type="range"] {
   flex-shrink: 0;
 }
 
-#courtage-field.is-locked {
+#courtage-field.is-locked,
+#kaufpreis-field.is-locked {
   opacity: 0.55;
 }
 
 #courtage-field.is-locked .checkbox-field,
-#courtage-field.is-locked input {
+#courtage-field.is-locked input,
+#kaufpreis-field.is-locked input {
   cursor: not-allowed;
 }
 
-#courtage-hint {
+#courtage-hint,
+#kaufpreis-hint {
   margin: 0;
 }
 

@@ -43,7 +43,9 @@
   var form = document.getElementById("calculator-form");
   if (!form) return;
 
+  var kaufpreisField = document.getElementById("kaufpreis-field");
   var kaufpreisInput = document.getElementById("kaufpreis");
+  var kaufpreisHint = document.getElementById("kaufpreis-hint");
   var eigenkapitalInput = document.getElementById("eigenkapital");
   var courtageField = document.getElementById("courtage-field");
   var courtageEnabled = document.getElementById("courtage-enabled");
@@ -51,6 +53,8 @@
   var courtageHint = document.getElementById("courtage-hint");
   var tilgungInput = document.getElementById("tilgung");
   var tilgungValue = document.getElementById("tilgung-value");
+  var zinsInput = document.getElementById("zins");
+  var zinsValue = document.getElementById("zins-value");
   var zinsbindungGroup = document.getElementById("zinsbindung-group");
 
   var resultRate = document.getElementById("result-rate");
@@ -145,6 +149,31 @@
     courtageField.classList.remove("is-locked");
   }
 
+  // Bei einem Objekt von Parma Immobilien steht der Kaufpreis fest -- er darf dann nicht mehr
+  // manuell veraendert werden koennen, analog zur Maklercourtage.
+  function lockKaufpreis() {
+    kaufpreisInput.disabled = true;
+    kaufpreisHint.hidden = false;
+    kaufpreisField.classList.add("is-locked");
+  }
+
+  function unlockKaufpreis() {
+    if (!kaufpreisInput.disabled) return;
+    kaufpreisInput.disabled = false;
+    kaufpreisHint.hidden = true;
+    kaufpreisField.classList.remove("is-locked");
+  }
+
+  // Zentrale Stelle, um eine Objektauswahl vollstaendig rueckgaengig zu machen (Wechsel auf
+  // "Freie Eingabe" oder falls die manuelle Kaufpreis-Aenderung je wieder moeglich werden sollte).
+  function clearEstateSelection() {
+    selectedEstate = null;
+    form.dataset.selectedEstateId = "";
+    unlockCourtage();
+    unlockKaufpreis();
+    updateSelectedEstatePreview();
+  }
+
   // Die beiden Ergebnis-Karten (Kaufpreisuebersicht / Monatliche Rate) stehen in einer
   // Flex-Spalte uebereinander und sollen trotz unterschiedlich langem Inhalt gleich gross
   // wirken -- reines CSS greift hier nicht, weil kein gemeinsamer Grid-Container mit freier
@@ -172,9 +201,11 @@
     document.fonts.ready.then(syncStepCardHeights);
   }
 
+  // Der Zinssatz kommt aus dem manuell bedienbaren Regler #zins -- die Zinsbindungs-Auswahl
+  // (10/15/20 Jahre) setzt beim Anklicken nur noch einen marktueblichen Vorschlagswert in
+  // diesen Regler ein, der Nutzer kann ihn danach unabhaengig davon frei anpassen.
   function activeZinssatz() {
-    var checked = zinsbindungGroup.querySelector("input:checked");
-    return checked ? parseFloat(checked.dataset.zins) : 3.7;
+    return parseFloat(zinsInput.value) || 0;
   }
 
   function activeZinsbindung() {
@@ -335,9 +366,7 @@
   // nicht mehr zwingend zum gezeigten Objektfoto -- Auswahl dann zuruecksetzen.
   kaufpreisInput.addEventListener("input", function () {
     if (!settingKaufpreisFromEstate && selectedEstate) {
-      selectedEstate = null;
-      form.dataset.selectedEstateId = "";
-      unlockCourtage();
+      clearEstateSelection();
     }
     formatNumberInputValue(kaufpreisInput);
   });
@@ -350,12 +379,26 @@
     tilgungValue.textContent = parseFloat(tilgungInput.value).toFixed(1).replace(".", ",") + " %";
   });
 
+  zinsInput.addEventListener("input", function () {
+    zinsValue.textContent = parseFloat(zinsInput.value).toFixed(1).replace(".", ",") + " %";
+  });
+
   courtageEnabled.addEventListener("change", function () {
     courtageInput.disabled = !courtageEnabled.checked;
     recalculate();
   });
 
-  zinsbindungGroup.addEventListener("change", updateZinsbindungStyles);
+  // Die Zinsbindungs-Auswahl setzt beim Wechsel einen marktueblichen Vorschlagswert in den
+  // Zins-Regler -- der Nutzer kann diesen danach jederzeit unabhaengig weiter anpassen.
+  zinsbindungGroup.addEventListener("change", function () {
+    updateZinsbindungStyles();
+    var checked = zinsbindungGroup.querySelector("input:checked");
+    if (checked) {
+      zinsInput.value = checked.dataset.zins;
+      zinsValue.textContent = parseFloat(zinsInput.value).toFixed(1).replace(".", ",") + " %";
+    }
+    recalculate();
+  });
 
   if (ctaAngebot) {
     ctaAngebot.addEventListener("click", function () {
@@ -370,7 +413,12 @@
     tabManual.setAttribute("aria-selected", String(!isEstate));
     tabEstate.setAttribute("aria-selected", String(isEstate));
     panelEstate.hidden = !isEstate;
-    if (isEstate) loadEstates();
+    if (isEstate) {
+      loadEstates();
+    } else if (selectedEstate) {
+      clearEstateSelection();
+      recalculate();
+    }
   }
 
   tabManual.addEventListener("click", function () {
@@ -449,6 +497,7 @@
         kaufpreisInput.value = estate.price || kaufpreisInput.value;
         formatNumberInputValue(kaufpreisInput);
         settingKaufpreisFromEstate = false;
+        lockKaufpreis();
         estateSearch.value = estate.title;
         estateResults.hidden = true;
         selectedEstate = estate;
