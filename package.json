@@ -8,5 +8,8 @@
   },
   "scripts": {
     "dev": "vercel dev"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.3"
   }
 }

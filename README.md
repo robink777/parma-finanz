@@ -62,6 +62,32 @@ die offizielle Doku unter apidoc.onoffice.de verifiziert, aber **noch nicht gege
 Request mit euren neuen Zugangsdaten getestet** – bitte nach dem Deployment einmal `/api/estates`
 aufrufen und die Rückgabe prüfen.
 
+## E-Mail-Versand einrichten
+
+Das Kontaktformular (`api/lead.js`) verschickt bei jeder Anfrage verbindlich eine E-Mail an
+`info@parmafinanz.de` (`lib/mailer.js`, per SMTP über ein bestehendes Strato-Postfach –
+kein zusätzlicher Anbieter/Signup nötig). Schlägt der E-Mail-Versand fehl, gilt die Anfrage als
+fehlgeschlagen (Fehlermeldung im Formular); die optionale onOffice-Übertragung (Adresse + Aufgabe)
+läuft unabhängig davon und blockiert die Anfrage nicht mehr, falls sie einmal nicht erreichbar ist.
+
+1. Ein Postfach bestimmen, über das versendet wird (z. B. `info@parmafinanz.de` selbst, oder ein
+   separates Versand-Postfach bei Strato).
+2. In `.env` eintragen:
+   ```
+   SMTP_HOST=smtp.strato.de
+   SMTP_PORT=465
+   SMTP_USER=info@parmafinanz.de
+   SMTP_PASS=…
+   ```
+   `MAIL_FROM` (optional) überschreibt den Absender, fällt sonst auf `SMTP_USER` zurück – die
+   meisten SMTP-Server verlangen, dass "From" zum eingeloggten Postfach passt, sonst landet die
+   Mail im Spam oder wird abgelehnt. `MAIL_TO` (optional) überschreibt den Empfänger, Default ist
+   bereits `info@parmafinanz.de`.
+3. In Vercel dieselben Variablen unter **Project → Settings → Environment Variables** eintragen
+   (niemals die `.env`-Datei committen).
+4. Nach dem Deployment einmal über das echte Formular eine Testanfrage senden und prüfen, ob die
+   Mail bei `info@parmafinanz.de` ankommt (ggf. auch im Spam-Ordner nachsehen).
+
 ## Deployment (Vercel + Strato-Domain)
 
 1. Projekt zu GitHub pushen (oder direkt via `vercel` CLI deployen).
@@ -84,3 +110,5 @@ aufrufen und die Rückgabe prüfen.
 - [ ] Entscheidung zu Analytics (z. B. Plausible) → Datenschutzerklärung entsprechend ergänzen
 - [ ] `.env` mit den produktiven Zugangsdaten ausschließlich in Vercel als Environment Variable
       hinterlegen, niemals ins Repo committen
+- [ ] SMTP-Zugangsdaten für den E-Mail-Versand einrichten (siehe Abschnitt
+      "E-Mail-Versand einrichten") und mit einer echten Testanfrage verifizieren
