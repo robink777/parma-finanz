@@ -174,31 +174,32 @@
     updateSelectedEstatePreview();
   }
 
-  // Die beiden Ergebnis-Karten (Kaufpreisuebersicht / Monatliche Rate) stehen in einer
-  // Flex-Spalte uebereinander und sollen trotz unterschiedlich langem Inhalt gleich gross
-  // wirken -- reines CSS greift hier nicht, weil kein gemeinsamer Grid-Container mit freier
-  // Hoehe existiert. Deshalb Hoehe per JS angleichen: erst zuruecksetzen (sonst waechst die
-  // min-height bei jedem Aufruf weiter), dann beide messen und auf das Maximum setzen.
-  var stepCards = document.querySelectorAll(".calc-step-card");
+  // Die linke Eingabespalte (.calc-inputs) und die rechte Ergebnis-Box (.calc-step-card)
+  // sollen bei der Desktop-2-Spalten-Ansicht (ab 1025px, siehe .calculator-grid) gleich
+  // hoch wirken -- auch wenn links durch die Objektbild-Vorschau nach einer Objektauswahl
+  // mehr Inhalt entsteht. Reines CSS greift hier nicht (kein gemeinsamer Grid-Container mit
+  // freier Hoehe), daher per JS angleichen: erst zuruecksetzen (sonst waechst die min-height
+  // bei jedem Aufruf weiter), dann beide messen und auf das Maximum setzen. Unterhalb des
+  // Breakpoints stehen beide Boxen gestapelt uebereinander -- dort keine min-height erzwingen,
+  // sonst entstuenden unnoetige Luecken.
+  var calcInputsBox = document.querySelector(".calc-inputs");
+  var resultBox = document.querySelector(".calc-step-card");
+  var twoColumnQuery = window.matchMedia("(min-width: 1025px)");
 
-  function syncStepCardHeights() {
-    if (!stepCards.length) return;
-    stepCards.forEach(function (card) {
-      card.style.minHeight = "";
-    });
-    var max = 0;
-    stepCards.forEach(function (card) {
-      max = Math.max(max, card.getBoundingClientRect().height);
-    });
-    stepCards.forEach(function (card) {
-      card.style.minHeight = max + "px";
-    });
+  function syncColumnHeights() {
+    if (!calcInputsBox || !resultBox) return;
+    calcInputsBox.style.minHeight = "";
+    resultBox.style.minHeight = "";
+    if (!twoColumnQuery.matches) return;
+    var max = Math.max(calcInputsBox.getBoundingClientRect().height, resultBox.getBoundingClientRect().height);
+    calcInputsBox.style.minHeight = max + "px";
+    resultBox.style.minHeight = max + "px";
   }
 
-  window.addEventListener("resize", syncStepCardHeights);
-  window.addEventListener("load", syncStepCardHeights);
+  window.addEventListener("resize", syncColumnHeights);
+  window.addEventListener("load", syncColumnHeights);
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(syncStepCardHeights);
+    document.fonts.ready.then(syncColumnHeights);
   }
 
   // Der Zinssatz kommt aus dem manuell bedienbaren Regler #zins -- die Zinsbindungs-Auswahl
@@ -354,7 +355,7 @@
     }
 
     updateSelectedEstatePreview();
-    syncStepCardHeights();
+    syncColumnHeights();
   }
 
   form.addEventListener("input", recalculate);

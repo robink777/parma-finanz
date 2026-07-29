@@ -775,12 +775,7 @@ input[type="range"] {
   }
 }
 
-.calc-step {
-  display: flex;
-}
-
 .calc-step-card {
-  flex: 1;
   background: var(--color-reinweiss);
   border: 1px solid var(--color-sand);
   border-radius: 10px;
@@ -794,6 +789,12 @@ input[type="range"] {
 .calc-step-card h3 {
   font-size: 18px;
   margin-bottom: var(--sp-2);
+}
+
+.calc-section-divider {
+  border: none;
+  border-top: 1px solid var(--color-sand);
+  margin: var(--sp-4) 0;
 }
 
 .calc-line {

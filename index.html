@@ -253,74 +253,70 @@
 
         <div class="calc-result-steps">
 
-          <div class="calc-step">
-            <div class="calc-step-card">
-              <h3>Kaufpreisübersicht</h3>
+          <div class="calc-step-card">
+            <h3>Kaufpreisübersicht</h3>
 
-              <div class="calc-line">
-                <span>Kaufpreis</span>
-                <span class="value" id="result-kaufpreis">–</span>
-              </div>
-
-              <div class="calc-line calc-line-sub">
-                <span>Kaufnebenkosten <span class="calc-line-percent" id="result-nebenkosten-percent"></span></span>
-                <span class="value" id="result-nebenkosten">–</span>
-              </div>
-              <div class="calc-line calc-line-detail">
-                <span>Grunderwerbsteuer (6,5 %)</span>
-                <span class="value" id="result-grunderwerbsteuer">–</span>
-              </div>
-              <div class="calc-line calc-line-detail">
-                <span>Notar- &amp; Grundbuchgebühren (1,75 %)</span>
-                <span class="value" id="result-notar">–</span>
-              </div>
-              <div class="calc-line calc-line-detail">
-                <span>Maklercourtage <span class="calc-line-percent" id="result-courtage-percent"></span></span>
-                <span class="value" id="result-courtage">–</span>
-              </div>
-
-              <div class="calc-line calc-line-negative">
-                <span>Eigenkapital <span class="calc-line-percent" id="result-eigenkapital-percent"></span></span>
-                <span class="value" id="result-eigenkapital">–</span>
-              </div>
-
-              <hr class="calc-divider" />
-
-              <div class="calc-line calc-line-total">
-                <span>Zu finanzierender Betrag</span>
-                <span class="value" id="result-darlehen">–</span>
-              </div>
+            <div class="calc-line">
+              <span>Kaufpreis</span>
+              <span class="value" id="result-kaufpreis">–</span>
             </div>
-          </div>
 
-          <div class="calc-step">
-            <div class="calc-step-card">
-              <h3>Monatliche Finanzierungsrate</h3>
+            <div class="calc-line calc-line-sub">
+              <span>Kaufnebenkosten <span class="calc-line-percent" id="result-nebenkosten-percent"></span></span>
+              <span class="value" id="result-nebenkosten">–</span>
+            </div>
+            <div class="calc-line calc-line-detail">
+              <span>Grunderwerbsteuer (6,5 %)</span>
+              <span class="value" id="result-grunderwerbsteuer">–</span>
+            </div>
+            <div class="calc-line calc-line-detail">
+              <span>Notar- &amp; Grundbuchgebühren (1,75 %)</span>
+              <span class="value" id="result-notar">–</span>
+            </div>
+            <div class="calc-line calc-line-detail">
+              <span>Maklercourtage <span class="calc-line-percent" id="result-courtage-percent"></span></span>
+              <span class="value" id="result-courtage">–</span>
+            </div>
 
-              <p class="calc-rate-big" id="result-rate">– <span>pro Monat</span></p>
-              <p class="calc-rate-sub" id="result-rate-sub">–</p>
+            <div class="calc-line calc-line-negative">
+              <span>Eigenkapital <span class="calc-line-percent" id="result-eigenkapital-percent"></span></span>
+              <span class="value" id="result-eigenkapital">–</span>
+            </div>
 
-              <div class="calc-split-bar">
-                <div class="calc-split-zinsen" id="split-zinsen-bar"></div>
-                <div class="calc-split-tilgung" id="split-tilgung-bar"></div>
-              </div>
-              <div class="calc-split-labels">
-                <span>Zinsen</span>
-                <span>Tilgung</span>
-              </div>
-              <div class="calc-split-values">
-                <span id="split-zinsen-value">–</span>
-                <span id="split-tilgung-value">–</span>
-              </div>
+            <hr class="calc-divider" />
 
-              <a href="#kontakt" class="btn btn-primary btn-block" id="cta-angebot">Persönliches Finanzierungsangebot anfragen</a>
+            <div class="calc-line calc-line-total">
+              <span>Zu finanzierender Betrag</span>
+              <span class="value" id="result-darlehen">–</span>
+            </div>
 
-              <p class="calc-disclaimer">Unverbindlicher Richtwert, keine Finanzierungszusage. Tagesaktuelle Zinsen können abweichen.</p>
+            <hr class="calc-section-divider" />
 
-              <div class="calc-extra-info">
-                <span>Restschuld nach Zinsbindung: <strong id="result-restschuld">–</strong></span>
-                <span>Vorauss. Gesamtlaufzeit: <strong id="result-laufzeit">–</strong></span>
-              </div>
+            <h3>Monatliche Finanzierungsrate</h3>
+
+            <p class="calc-rate-big" id="result-rate">– <span>pro Monat</span></p>
+            <p class="calc-rate-sub" id="result-rate-sub">–</p>
+
+            <div class="calc-split-bar">
+              <div class="calc-split-zinsen" id="split-zinsen-bar"></div>
+              <div class="calc-split-tilgung" id="split-tilgung-bar"></div>
+            </div>
+            <div class="calc-split-labels">
+              <span>Zinsen</span>
+              <span>Tilgung</span>
+            </div>
+            <div class="calc-split-values">
+              <span id="split-zinsen-value">–</span>
+              <span id="split-tilgung-value">–</span>
+            </div>
+
+            <a href="#kontakt" class="btn btn-primary btn-block" id="cta-angebot">Persönliches Finanzierungsangebot anfragen</a>
+
+            <p class="calc-disclaimer">Unverbindlicher Richtwert, keine Finanzierungszusage. Tagesaktuelle Zinsen können abweichen.</p>
+
+            <div class="calc-extra-info">
+              <span>Restschuld nach Zinsbindung: <strong id="result-restschuld">–</strong></span>
+              <span>Vorauss. Gesamtlaufzeit: <strong id="result-laufzeit">–</strong></span>
             </div>
           </div>
 
