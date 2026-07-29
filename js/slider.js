@@ -15,11 +15,19 @@
   var NEBENKOSTEN_SATZ = 0.065 + 0.0175 + 0.0357;
   var EIGENKAPITAL_ANTEIL = 0.2;
 
-  var euroFormatter = new Intl.NumberFormat("de-DE", {
+  // Format wie im Finanzierungsrechner (js/calculator.js): immer 2 Nachkommastellen, kein
+  // Leerzeichen vor dem Euro-Zeichen -- "100.000,00€".
+  var euroFormatterIntl = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
+  var euroFormatter = {
+    format: function (value) {
+      return euroFormatterIntl.format(value).replace(/[\s  ]/g, "");
+    },
+  };
 
   function monatlicheRate(kaufpreis) {
     var nebenkosten = kaufpreis * NEBENKOSTEN_SATZ;
