@@ -401,13 +401,23 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "estate-result";
+
+      var metaParts = [
+        [estate.street, [estate.zip, estate.city].filter(Boolean).join(" ")].filter(Boolean).join(", "),
+        estate.immoNr ? "ImmoNr " + estate.immoNr : null,
+      ].filter(Boolean);
+
       btn.innerHTML =
         (estate.image
           ? "<img class=\"estate-result-thumb\" src=\"" + escapeHtml(estate.image) + "\" alt=\"\" />"
           : "<span class=\"estate-result-thumb estate-result-thumb-empty\" aria-hidden=\"true\"></span>") +
         "<span class=\"estate-result-text\">" +
+        "<span class=\"estate-result-title\">" +
         escapeHtml(estate.title) +
-        (estate.city ? " · " + escapeHtml(estate.city) : "") +
+        "</span>" +
+        (metaParts.length
+          ? "<span class=\"estate-result-meta\">" + escapeHtml(metaParts.join(" · ")) + "</span>"
+          : "") +
         "</span><span class=\"price\">" +
         (estate.price ? euroFormatter.format(estate.price) : "–") +
         "</span>";
@@ -460,7 +470,10 @@
     var filtered = estatesCache.filter(function (estate) {
       return (
         (estate.title || "").toLowerCase().indexOf(query) !== -1 ||
-        (estate.city || "").toLowerCase().indexOf(query) !== -1
+        (estate.city || "").toLowerCase().indexOf(query) !== -1 ||
+        (estate.zip || "").toLowerCase().indexOf(query) !== -1 ||
+        (estate.street || "").toLowerCase().indexOf(query) !== -1 ||
+        (estate.immoNr || "").toLowerCase().indexOf(query) !== -1
       );
     });
     renderEstateResults(filtered);

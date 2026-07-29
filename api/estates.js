@@ -32,6 +32,9 @@ async function fetchPublishedEstates() {
         "kaufpreis",
         "ort",
         "plz",
+        "strasse",
+        "hausnummer",
+        "objektnr_extern",
         "wohnflaeche",
         "vermarktungsart",
         "erstellt_am",
@@ -68,6 +71,11 @@ async function fetchPublishedEstates() {
         title: r.objekttitel || "Immobilie",
         price: Number(r.kaufpreis) || null,
         city: r.ort || "",
+        zip: r.plz || "",
+        street: [r.strasse, r.hausnummer].filter(Boolean).join(" "),
+        // "objektnr_extern" (PropNo) ist die extern sichtbare Immobiliennummer (z. B. "DP116"),
+        // ueber die Kunden/Berater ein Objekt aus Exposes oder E-Mails wiederfinden.
+        immoNr: r.objektnr_extern || "",
         livingArea: r.wohnflaeche ? Number(r.wohnflaeche) : null,
         // "erstellt_am" (Erstellungsdatum in onOffice) statt des eigenen Feldes
         // "Vermarktungsstart am" -- Live-Stichprobe zeigte erstellt_am durchgehend befuellt,
