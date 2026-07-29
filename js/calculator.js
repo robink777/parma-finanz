@@ -521,5 +521,6 @@
   formatNumberInputValue(kaufpreisInput);
   formatNumberInputValue(eigenkapitalInput);
   updateZinsbindungStyles();
+  activateTab("estate");
   recalculate();
 })();
