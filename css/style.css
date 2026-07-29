@@ -687,8 +687,9 @@ input[type="range"] {
 }
 
 .courtage-input-row input[type="number"] {
-  width: 76px;
+  width: 100px;
   flex: none;
+  padding-right: var(--sp-1);
 }
 
 .courtage-suffix {
