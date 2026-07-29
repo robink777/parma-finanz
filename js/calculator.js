@@ -27,8 +27,10 @@
 
   var kaufpreisInput = document.getElementById("kaufpreis");
   var eigenkapitalInput = document.getElementById("eigenkapital");
+  var courtageField = document.getElementById("courtage-field");
+  var courtageEnabled = document.getElementById("courtage-enabled");
   var courtageInput = document.getElementById("courtage");
-  var courtageValue = document.getElementById("courtage-value");
+  var courtageHint = document.getElementById("courtage-hint");
   var tilgungInput = document.getElementById("tilgung");
   var tilgungValue = document.getElementById("tilgung-value");
   var zinsbindungGroup = document.getElementById("zinsbindung-group");
@@ -101,6 +103,28 @@
       selectedEstateImage.hidden = true;
     }
     selectedEstatePreview.hidden = false;
+  }
+
+  // Bei Objekten von Parma Immobilien ist die tatsaechliche Courtage im onOffice-Feld
+  // "Aussenprovision" (prozent_aussenprovision) hinterlegt und weicht je nach Objekt vom
+  // Standardwert ab (z. B. reduzierte Courtage bei Neubauprojekten). Ist ein Objekt
+  // ausgewaehlt, wird dieser reale Wert automatisch uebernommen und das Feld gesperrt,
+  // damit keine falsche manuelle Angabe die Berechnung verfaelscht.
+  function lockCourtage(percent) {
+    courtageEnabled.checked = true;
+    courtageEnabled.disabled = true;
+    courtageInput.value = percent;
+    courtageInput.disabled = true;
+    courtageHint.hidden = false;
+    courtageField.classList.add("is-locked");
+  }
+
+  function unlockCourtage() {
+    if (!courtageEnabled.disabled) return;
+    courtageEnabled.disabled = false;
+    courtageInput.disabled = !courtageEnabled.checked;
+    courtageHint.hidden = true;
+    courtageField.classList.remove("is-locked");
   }
 
   // Die beiden Ergebnis-Karten (Kaufpreisuebersicht / Monatliche Rate) stehen in einer
@@ -186,7 +210,7 @@
   function recalculate() {
     var kaufpreis = parseFloat(kaufpreisInput.value) || 0;
     var eigenkapital = parseFloat(eigenkapitalInput.value) || 0;
-    var courtageSatz = (parseFloat(courtageInput.value) || 0) / 100;
+    var courtageSatz = courtageEnabled.checked ? (parseFloat(courtageInput.value) || 0) / 100 : 0;
     var tilgung = parseFloat(tilgungInput.value) || 2;
     var zins = activeZinssatz();
     var zinsbindung = activeZinsbindung();
@@ -295,6 +319,7 @@
     if (!settingKaufpreisFromEstate && selectedEstate) {
       selectedEstate = null;
       form.dataset.selectedEstateId = "";
+      unlockCourtage();
     }
   });
 
@@ -302,8 +327,9 @@
     tilgungValue.textContent = parseFloat(tilgungInput.value).toFixed(1).replace(".", ",") + " %";
   });
 
-  courtageInput.addEventListener("input", function () {
-    courtageValue.textContent = parseFloat(courtageInput.value).toFixed(2).replace(".", ",") + " %";
+  courtageEnabled.addEventListener("change", function () {
+    courtageInput.disabled = !courtageEnabled.checked;
+    recalculate();
   });
 
   zinsbindungGroup.addEventListener("change", updateZinsbindungStyles);
@@ -393,6 +419,11 @@
         estateResults.hidden = true;
         selectedEstate = estate;
         form.dataset.selectedEstateId = estate.id;
+        if (estate.provisionPercent != null) {
+          lockCourtage(estate.provisionPercent);
+        } else {
+          unlockCourtage();
+        }
         recalculate();
       });
       estateResults.appendChild(btn);

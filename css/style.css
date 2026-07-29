@@ -666,6 +666,49 @@ input[type="range"] {
   text-align: right;
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  cursor: pointer;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-messing);
+  flex-shrink: 0;
+}
+
+.courtage-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.courtage-input-row input[type="number"] {
+  width: 76px;
+  flex: none;
+}
+
+.courtage-suffix {
+  font-family: var(--font-mono);
+  color: var(--color-walnuss);
+}
+
+#courtage-field.is-locked {
+  opacity: 0.55;
+}
+
+#courtage-field.is-locked .checkbox-field,
+#courtage-field.is-locked input {
+  cursor: not-allowed;
+}
+
+#courtage-hint {
+  margin: 0;
+}
+
 .zinsbindung-group {
   display: flex;
   gap: var(--sp-1);

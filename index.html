@@ -198,12 +198,16 @@
             <input type="number" id="eigenkapital" name="eigenkapital" inputmode="numeric" min="0" step="1000" value="70000" />
           </div>
 
-          <div class="field">
-            <label for="courtage">Maklercourtage</label>
-            <div class="slider-row">
-              <input type="range" id="courtage" name="courtage" min="0" max="7" step="0.01" value="3.57" />
-              <span class="slider-value" id="courtage-value">3,57 %</span>
+          <div class="field" id="courtage-field">
+            <label class="checkbox-field" for="courtage-enabled">
+              <input type="checkbox" id="courtage-enabled" name="courtage-enabled" checked />
+              <span>Maklercourtage berücksichtigen</span>
+            </label>
+            <div class="courtage-input-row">
+              <input type="number" id="courtage" name="courtage" inputmode="decimal" min="0" max="10" step="0.01" value="3.57" />
+              <span class="courtage-suffix">%</span>
             </div>
+            <p class="small" id="courtage-hint" hidden>Aus den Objektdaten übernommen (Außenprovision).</p>
           </div>
 
           <div class="field">

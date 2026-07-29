@@ -26,7 +26,17 @@ async function fetchPublishedEstates() {
     resourcetype: "estate",
     cacheable: true,
     parameters: {
-      data: ["Id", "objekttitel", "kaufpreis", "ort", "plz", "wohnflaeche", "vermarktungsart", "erstellt_am"],
+      data: [
+        "Id",
+        "objekttitel",
+        "kaufpreis",
+        "ort",
+        "plz",
+        "wohnflaeche",
+        "vermarktungsart",
+        "erstellt_am",
+        "prozent_aussenprovision",
+      ],
       filter: {
         [filterField]: [{ op: "=", val: filterValue }],
         vermarktungsart: [{ op: "=", val: "kauf" }],
@@ -48,17 +58,24 @@ async function fetchPublishedEstates() {
 
   const estates = records
     .filter((r) => r.kaufpreis)
-    .map((r) => ({
-      id: r.Id || r.id,
-      title: r.objekttitel || "Immobilie",
-      price: Number(r.kaufpreis) || null,
-      city: r.ort || "",
-      livingArea: r.wohnflaeche ? Number(r.wohnflaeche) : null,
-      // "erstellt_am" (Erstellungsdatum in onOffice) statt des eigenen Feldes
-      // "Vermarktungsstart am" -- Live-Stichprobe zeigte erstellt_am durchgehend befuellt,
-      // das individuelle Vermarktungsstart-Feld dagegen nur bei einem Bruchteil der Objekte.
-      createdAt: r.erstellt_am || null,
-    }));
+    .map((r) => {
+      // "prozent_aussenprovision" ist das Feld "Aussenprovision" (Prozentsatz) aus dem
+      // onOffice-Backend -- bei Objektauswahl im Rechner soll dieser reale Wert die
+      // Maklercourtage-Eingabe automatisch ersetzen statt eines pauschalen Schaetzwerts.
+      const provision = Number(r.prozent_aussenprovision);
+      return {
+        id: r.Id || r.id,
+        title: r.objekttitel || "Immobilie",
+        price: Number(r.kaufpreis) || null,
+        city: r.ort || "",
+        livingArea: r.wohnflaeche ? Number(r.wohnflaeche) : null,
+        // "erstellt_am" (Erstellungsdatum in onOffice) statt des eigenen Feldes
+        // "Vermarktungsstart am" -- Live-Stichprobe zeigte erstellt_am durchgehend befuellt,
+        // das individuelle Vermarktungsstart-Feld dagegen nur bei einem Bruchteil der Objekte.
+        createdAt: r.erstellt_am || null,
+        provisionPercent: r.prozent_aussenprovision !== "" && !isNaN(provision) ? provision : null,
+      };
+    });
 
   // Titelbilder nachladen -- ein einziger Batch-Aufruf fuer alle Objekte statt N Einzelaufrufen.
   // Schlaegt der Bildabruf fehl, soll das die Objektauswahl selbst nicht lahmlegen (die Liste ist
