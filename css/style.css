@@ -712,39 +712,6 @@ input[type="range"] {
 
 .calc-step {
   display: flex;
-  gap: var(--sp-2);
-  align-items: stretch;
-}
-
-.calc-step-rail {
-  flex-shrink: 0;
-  width: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.calc-step-marker {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-stein);
-  border: 1px solid var(--color-sand);
-  color: var(--color-walnuss);
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.calc-step-line {
-  flex: 1;
-  width: 1px;
-  background: var(--color-sand);
-  margin: var(--sp-1) 0;
 }
 
 .calc-step-card {
@@ -755,6 +722,8 @@ input[type="range"] {
   padding: var(--sp-3);
   min-width: 0;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
 }
 
 .calc-step-card h3 {
@@ -871,7 +840,8 @@ input[type="range"] {
 
 .calc-step-card .btn-primary {
   width: 100%;
-  margin-top: var(--sp-1);
+  margin-top: auto;
+  padding-top: var(--sp-1);
 }
 
 .calc-disclaimer {
@@ -982,6 +952,42 @@ input[type="range"] {
 .estate-picker-status {
   font-size: 13px;
   color: var(--color-asche-text);
+}
+
+.selected-estate-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding: var(--sp-2);
+  background: var(--color-reinweiss);
+  border: 1px solid var(--color-sand);
+  border-radius: 8px;
+}
+
+.selected-estate-preview[hidden] {
+  display: none;
+}
+
+.selected-estate-preview-image {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--color-stein);
+}
+
+.selected-estate-preview-body {
+  min-width: 0;
+}
+
+.selected-estate-preview-title {
+  font-weight: 600;
+  color: var(--color-anthrazit);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ---------- Standorte ---------- */

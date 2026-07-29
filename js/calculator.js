@@ -1,11 +1,11 @@
 (function () {
   "use strict";
 
-  // Kaufnebenkosten NRW (Briefing Abschnitt 4a.1)
+  // Kaufnebenkosten NRW (Briefing Abschnitt 4a.1). Die Maklercourtage ist ueber das Feld
+  // #courtage vom Nutzer einstellbar (Default 3,57 %), Grunderwerbsteuer und Notar-/
+  // Grundbuchgebuehren bleiben feste Erfahrungswerte.
   var GRUNDERWERBSTEUER = 0.065;
   var NOTAR_GRUNDBUCH = 0.0175; // Mittelwert 1,5–2,0 %
-  var COURTAGE = 0.0357;
-  var NEBENKOSTEN_SATZ = GRUNDERWERBSTEUER + NOTAR_GRUNDBUCH + COURTAGE;
 
   // Immer 2 Nachkommastellen (100.000,00 €) statt gerundeter Ganzzahlen, und ohne das
   // von Intl.NumberFormat standardmaessig eingefuegte (geschuetzte) Leerzeichen vor dem
@@ -27,6 +27,8 @@
 
   var kaufpreisInput = document.getElementById("kaufpreis");
   var eigenkapitalInput = document.getElementById("eigenkapital");
+  var courtageInput = document.getElementById("courtage");
+  var courtageValue = document.getElementById("courtage-value");
   var tilgungInput = document.getElementById("tilgung");
   var tilgungValue = document.getElementById("tilgung-value");
   var zinsbindungGroup = document.getElementById("zinsbindung-group");
@@ -39,6 +41,7 @@
   var resultGrunderwerbsteuer = document.getElementById("result-grunderwerbsteuer");
   var resultNotar = document.getElementById("result-notar");
   var resultCourtage = document.getElementById("result-courtage");
+  var resultCourtagePercent = document.getElementById("result-courtage-percent");
   var resultEigenkapital = document.getElementById("result-eigenkapital");
   var resultEigenkapitalPercent = document.getElementById("result-eigenkapital-percent");
   var resultDarlehen = document.getElementById("result-darlehen");
@@ -71,6 +74,61 @@
   var tabManual = document.getElementById("tab-manual");
   var tabEstate = document.getElementById("tab-estate");
   var panelEstate = document.getElementById("panel-estate");
+
+  var selectedEstatePreview = document.getElementById("selected-estate-preview");
+  var selectedEstateImage = document.getElementById("selected-estate-image");
+  var selectedEstateTitle = document.getElementById("selected-estate-title");
+  var selectedEstateCity = document.getElementById("selected-estate-city");
+
+  function updateSelectedEstatePreview() {
+    if (!selectedEstatePreview) return;
+    if (!selectedEstate) {
+      selectedEstatePreview.hidden = true;
+      return;
+    }
+    selectedEstateTitle.textContent = selectedEstate.title || "";
+    if (selectedEstate.city) {
+      selectedEstateCity.hidden = false;
+      selectedEstateCity.textContent = selectedEstate.city;
+    } else {
+      selectedEstateCity.hidden = true;
+    }
+    if (selectedEstate.image) {
+      selectedEstateImage.src = selectedEstate.image;
+      selectedEstateImage.alt = selectedEstate.title || "";
+      selectedEstateImage.hidden = false;
+    } else {
+      selectedEstateImage.hidden = true;
+    }
+    selectedEstatePreview.hidden = false;
+  }
+
+  // Die beiden Ergebnis-Karten (Kaufpreisuebersicht / Monatliche Rate) stehen in einer
+  // Flex-Spalte uebereinander und sollen trotz unterschiedlich langem Inhalt gleich gross
+  // wirken -- reines CSS greift hier nicht, weil kein gemeinsamer Grid-Container mit freier
+  // Hoehe existiert. Deshalb Hoehe per JS angleichen: erst zuruecksetzen (sonst waechst die
+  // min-height bei jedem Aufruf weiter), dann beide messen und auf das Maximum setzen.
+  var stepCards = document.querySelectorAll(".calc-step-card");
+
+  function syncStepCardHeights() {
+    if (!stepCards.length) return;
+    stepCards.forEach(function (card) {
+      card.style.minHeight = "";
+    });
+    var max = 0;
+    stepCards.forEach(function (card) {
+      max = Math.max(max, card.getBoundingClientRect().height);
+    });
+    stepCards.forEach(function (card) {
+      card.style.minHeight = max + "px";
+    });
+  }
+
+  window.addEventListener("resize", syncStepCardHeights);
+  window.addEventListener("load", syncStepCardHeights);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncStepCardHeights);
+  }
 
   function activeZinssatz() {
     var checked = zinsbindungGroup.querySelector("input:checked");
@@ -128,13 +186,15 @@
   function recalculate() {
     var kaufpreis = parseFloat(kaufpreisInput.value) || 0;
     var eigenkapital = parseFloat(eigenkapitalInput.value) || 0;
+    var courtageSatz = (parseFloat(courtageInput.value) || 0) / 100;
     var tilgung = parseFloat(tilgungInput.value) || 2;
     var zins = activeZinssatz();
     var zinsbindung = activeZinsbindung();
 
     var grunderwerbsteuer = kaufpreis * GRUNDERWERBSTEUER;
     var notarGrundbuch = kaufpreis * NOTAR_GRUNDBUCH;
-    var courtage = kaufpreis * COURTAGE;
+    var courtage = kaufpreis * courtageSatz;
+    var nebenkostenSatz = GRUNDERWERBSTEUER + NOTAR_GRUNDBUCH + courtageSatz;
     var nebenkosten = grunderwerbsteuer + notarGrundbuch + courtage;
     var finanzierungsbedarf = kaufpreis + nebenkosten;
     var darlehen = Math.max(0, finanzierungsbedarf - eigenkapital);
@@ -159,10 +219,11 @@
 
     resultKaufpreis.textContent = euroFormatter.format(kaufpreis);
     resultNebenkosten.textContent = "+" + euroFormatter.format(nebenkosten);
-    resultNebenkostenPercent.textContent = "(" + (NEBENKOSTEN_SATZ * 100).toFixed(1).replace(".", ",") + " %)";
+    resultNebenkostenPercent.textContent = "(" + (nebenkostenSatz * 100).toFixed(2).replace(".", ",") + " %)";
     resultGrunderwerbsteuer.textContent = "+" + euroFormatter.format(grunderwerbsteuer);
     resultNotar.textContent = "+" + euroFormatter.format(notarGrundbuch);
     resultCourtage.textContent = "+" + euroFormatter.format(courtage);
+    resultCourtagePercent.textContent = "(" + (courtageSatz * 100).toFixed(2).replace(".", ",") + " %)";
     resultEigenkapital.textContent = "–" + euroFormatter.format(eigenkapital);
     resultEigenkapitalPercent.textContent =
       "(" + (kaufpreis > 0 ? ((eigenkapital / kaufpreis) * 100).toFixed(0) : "0") + " %)";
@@ -218,6 +279,9 @@
         estateTitle: selectedEstate ? selectedEstate.title : null,
       });
     }
+
+    updateSelectedEstatePreview();
+    syncStepCardHeights();
   }
 
   form.addEventListener("input", recalculate);
@@ -236,6 +300,10 @@
 
   tilgungInput.addEventListener("input", function () {
     tilgungValue.textContent = parseFloat(tilgungInput.value).toFixed(1).replace(".", ",") + " %";
+  });
+
+  courtageInput.addEventListener("input", function () {
+    courtageValue.textContent = parseFloat(courtageInput.value).toFixed(2).replace(".", ",") + " %";
   });
 
   zinsbindungGroup.addEventListener("change", updateZinsbindungStyles);

@@ -179,6 +179,13 @@
               <div class="estate-results" id="estate-results" hidden></div>
               <p class="estate-picker-status" id="estate-status">Objekte werden geladen …</p>
             </div>
+            <div class="selected-estate-preview" id="selected-estate-preview" hidden>
+              <img class="selected-estate-preview-image" id="selected-estate-image" src="" alt="" />
+              <div class="selected-estate-preview-body">
+                <p class="selected-estate-preview-title" id="selected-estate-title"></p>
+                <p class="small" id="selected-estate-city"></p>
+              </div>
+            </div>
           </div>
 
           <div class="field">
@@ -189,6 +196,14 @@
           <div class="field">
             <label for="eigenkapital">Eigenkapital</label>
             <input type="number" id="eigenkapital" name="eigenkapital" inputmode="numeric" min="0" step="1000" value="70000" />
+          </div>
+
+          <div class="field">
+            <label for="courtage">Maklercourtage</label>
+            <div class="slider-row">
+              <input type="range" id="courtage" name="courtage" min="0" max="7" step="0.01" value="3.57" />
+              <span class="slider-value" id="courtage-value">3,57 %</span>
+            </div>
           </div>
 
           <div class="field">
@@ -220,10 +235,6 @@
         <div class="calc-result-steps">
 
           <div class="calc-step">
-            <div class="calc-step-rail">
-              <span class="calc-step-marker">1</span>
-              <span class="calc-step-line"></span>
-            </div>
             <div class="calc-step-card">
               <h3>Kaufpreisübersicht</h3>
 
@@ -245,7 +256,7 @@
                 <span class="value" id="result-notar">–</span>
               </div>
               <div class="calc-line calc-line-detail">
-                <span>Maklercourtage (3,57 %)</span>
+                <span>Maklercourtage <span class="calc-line-percent" id="result-courtage-percent"></span></span>
                 <span class="value" id="result-courtage">–</span>
               </div>
 
@@ -264,9 +275,6 @@
           </div>
 
           <div class="calc-step">
-            <div class="calc-step-rail">
-              <span class="calc-step-marker">2</span>
-            </div>
             <div class="calc-step-card">
               <h3>Monatliche Finanzierungsrate</h3>
 
