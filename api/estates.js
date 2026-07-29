@@ -96,7 +96,23 @@ async function fetchPublishedEstates() {
     console.error("api/estates: Titelbilder konnten nicht geladen werden:", err);
   }
 
-  return estates.map((e) => ({ ...e, image: images[String(e.id)] || null }));
+  // Zusaetzlich eine groessere Bildvariante laden -- die kleinen 120x120-Thumbnails reichen fuer
+  // die Objektliste/-vorschau im Rechner, wurden aber auch fuer die grosse Angebotskarte im
+  // Kontaktbereich (imageLarge, ca. 450x220 dargestellt) verwendet und dort stark verpixelt hoch-
+  // skaliert. Eigener try/catch, damit ein Fehlschlag hier nicht die (kleinen) Vorschaubilder
+  // lahmlegt.
+  let imagesLarge = {};
+  try {
+    imagesLarge = await fetchEstateImages(estates.map((e) => e.id), "900x500");
+  } catch (err) {
+    console.error("api/estates: Grosse Titelbilder konnten nicht geladen werden:", err);
+  }
+
+  return estates.map((e) => ({
+    ...e,
+    image: images[String(e.id)] || null,
+    imageLarge: imagesLarge[String(e.id)] || images[String(e.id)] || null,
+  }));
 }
 
 module.exports = async (req, res) => {

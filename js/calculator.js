@@ -290,8 +290,8 @@
         } else {
           offerLocation.hidden = true;
         }
-        if (selectedEstate.image) {
-          offerImage.src = selectedEstate.image;
+        if (selectedEstate.imageLarge || selectedEstate.image) {
+          offerImage.src = selectedEstate.imageLarge || selectedEstate.image;
           offerImage.alt = selectedEstate.title || "";
           offerImageWrap.hidden = false;
         } else {
