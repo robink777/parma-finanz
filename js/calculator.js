@@ -7,11 +7,20 @@
   var COURTAGE = 0.0357;
   var NEBENKOSTEN_SATZ = GRUNDERWERBSTEUER + NOTAR_GRUNDBUCH + COURTAGE;
 
-  var euroFormatter = new Intl.NumberFormat("de-DE", {
+  // Immer 2 Nachkommastellen (100.000,00 €) statt gerundeter Ganzzahlen, und ohne das
+  // von Intl.NumberFormat standardmaessig eingefuegte (geschuetzte) Leerzeichen vor dem
+  // Euro-Zeichen -- auf Kundenwunsch, Beispiel: "100.000,00€".
+  var euroFormatterIntl = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
+  var euroFormatter = {
+    format: function (value) {
+      return euroFormatterIntl.format(value).replace(/[\s\u00a0\u202f]/g, "");
+    },
+  };
 
   var form = document.getElementById("calculator-form");
   if (!form) return;

@@ -7,9 +7,17 @@ let cache = { data: null, expiresAt: 0 };
 
 async function fetchPublishedEstates() {
   // "status" (Status 1) = "1" ist das echte Aktiv-Flag in diesem Account (live geprueft: 109
-  // Treffer, davon 99 mit vermarktungsart=kauf). "status2" ist HIER kein Aktiv-Flag -- der Wert
-  // "status2obj_aktiv" ist in diesem Account nur ein Systemplatzhalter ("nicht auswaehlen") und
-  // traf live nur 5 fehlerhaft befuellte Datensaetze.
+  // Treffer, davon 99 mit vermarktungsart=kauf). "status2" ist HIER KEIN verlaesslicher
+  // Online/Offline-Schalter -- live geprueft (Juli 2026): bei den tatsaechlich
+  // veroeffentlichten Objekten steht status2 mal leer, mal "aktive_vermarktung", sogar
+  // vereinzelt "reserviert" -- es ist ein CRM-Workflow-Feld, kein Verfuegbarkeits-Flag.
+  //
+  // WICHTIG (Bugfix Juli 2026): status=1 + vermarktungsart=kauf ALLEIN reicht nicht --
+  // das lieferte live 98 Treffer, wovon nur 67 tatsaechlich veroeffentlichen=1 (also auf
+  // der eigenen Webseite freigegeben) waren. Die restlichen 31 sind zwar CRM-seitig aktiv,
+  // aber nicht fuer die eigene Website vorgesehen und duerfen hier nicht auftauchen --
+  // veroeffentlichen ist derselbe Schalter, der schon bei "Top Angebote" (api/top-estates.js)
+  // verwendet wird ("Eigene Internetseite" -> "Veroeffentlichen: ja/nein" im onOffice-Backend).
   const filterField = process.env.ONOFFICE_ESTATE_FILTER_FIELD || "status";
   const filterValue = process.env.ONOFFICE_ESTATE_FILTER_VALUE || "1";
 
@@ -22,6 +30,7 @@ async function fetchPublishedEstates() {
       filter: {
         [filterField]: [{ op: "=", val: filterValue }],
         vermarktungsart: [{ op: "=", val: "kauf" }],
+        veroeffentlichen: [{ op: "=", val: "1" }],
       },
       // WICHTIG (verifiziert im Schwesterprojekt ~/finanzierungsrechner): listlimit-Werte ueber
       // 500 werden von der onOffice-API NICHT gekappt oder abgelehnt, sondern die API faellt

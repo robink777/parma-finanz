@@ -45,12 +45,14 @@ Formularversand melden aber einen Fehler, weil `/api/*` fehlt.
    ONOFFICE_API_TOKEN=…
    ONOFFICE_API_SECRET=…
    ```
-4. **Wichtig – Filter für die Objektauswahl prüfen:** `api/estates.js` filtert aktuell auf
-   `status2 = status2obj_aktiv` UND `vermarktungsart = kauf` (siehe `ONOFFICE_ESTATE_FILTER_FIELD`
-   / `ONOFFICE_ESTATE_FILTER_VALUE` in `.env`). Das ist eine Annahme, kein offiziell dokumentiertes
-   "für Website freigegeben"-Flag – in den 520 Estate-Feldern eures Accounts gibt es kein
-   eindeutig benanntes Feld dafür. Bitte in onOffice prüfen, welches Feld/welcher Wert bei euch
-   tatsächlich markiert, dass ein Objekt auf der Webseite erscheinen soll, und ggf. anpassen.
+4. **Filter für die Objektauswahl** (`api/estates.js`, live geprüft Juli 2026): `status = 1`
+   (Status 1 = Active, siehe `ONOFFICE_ESTATE_FILTER_FIELD` / `ONOFFICE_ESTATE_FILTER_VALUE` in
+   `.env`) UND `vermarktungsart = kauf` UND `veroeffentlichen = 1`. Der dritte Teil
+   (`veroeffentlichen`, das "Eigene Internetseite" → "Veröffentlichen: ja/nein"-Feld im
+   onOffice-Backend) ist entscheidend – ohne ihn tauchten live 31 von 98 Objekten auf, die zwar
+   CRM-seitig aktiv, aber nicht für die eigene Website freigegeben waren. `status2` ist **kein**
+   verlässliches Online/Offline-Kriterium (CRM-Workflow-Feld, u.a. auch bei veröffentlichten
+   Objekten leer oder "reserviert").
 5. Optional: `ONOFFICE_TASK_ASSIGNEE_LOGIN` setzen (loginName aus onOffice, z. B. `Robin`), damit
    neue Leads automatisch als Aufgabe einem Berater zugewiesen werden. Leer lassen für
    Standard-Zuweisung.
