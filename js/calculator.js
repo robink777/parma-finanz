@@ -22,6 +22,24 @@
     },
   };
 
+  // Kaufpreis/Eigenkapital sind Text- statt Zahlenfelder, damit der Nutzer beim Tippen
+  // sofort die deutsche Tausenderpunkt-Schreibweise sieht (100.000 statt 100000) --
+  // ein natives <input type="number"> erlaubt keine solche Formatierung im Feld selbst.
+  function parseNumericInput(value) {
+    var digits = String(value || "").replace(/[^0-9]/g, "");
+    return digits ? parseInt(digits, 10) : 0;
+  }
+
+  function formatNumberInputValue(input) {
+    var raw = parseNumericInput(input.value);
+    input.value = raw ? raw.toLocaleString("de-DE") : "";
+    // Cursor nach dem Reformatieren ans Ende setzen -- sonst springt er in manchen
+    // Browsern an den Anfang, wenn sich durch neue Tausenderpunkte die Laenge aendert.
+    if (document.activeElement === input) {
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+  }
+
   var form = document.getElementById("calculator-form");
   if (!form) return;
 
@@ -208,8 +226,8 @@
   }
 
   function recalculate() {
-    var kaufpreis = parseFloat(kaufpreisInput.value) || 0;
-    var eigenkapital = parseFloat(eigenkapitalInput.value) || 0;
+    var kaufpreis = parseNumericInput(kaufpreisInput.value);
+    var eigenkapital = parseNumericInput(eigenkapitalInput.value);
     var courtageSatz = courtageEnabled.checked ? (parseFloat(courtageInput.value) || 0) / 100 : 0;
     var tilgung = parseFloat(tilgungInput.value) || 2;
     var zins = activeZinssatz();
@@ -321,6 +339,11 @@
       form.dataset.selectedEstateId = "";
       unlockCourtage();
     }
+    formatNumberInputValue(kaufpreisInput);
+  });
+
+  eigenkapitalInput.addEventListener("input", function () {
+    formatNumberInputValue(eigenkapitalInput);
   });
 
   tilgungInput.addEventListener("input", function () {
@@ -424,6 +447,7 @@
       btn.addEventListener("click", function () {
         settingKaufpreisFromEstate = true;
         kaufpreisInput.value = estate.price || kaufpreisInput.value;
+        formatNumberInputValue(kaufpreisInput);
         settingKaufpreisFromEstate = false;
         estateSearch.value = estate.title;
         estateResults.hidden = true;
@@ -494,6 +518,8 @@
     }
   });
 
+  formatNumberInputValue(kaufpreisInput);
+  formatNumberInputValue(eigenkapitalInput);
   updateZinsbindungStyles();
   recalculate();
 })();

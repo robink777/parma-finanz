@@ -190,12 +190,18 @@
 
           <div class="field">
             <label for="kaufpreis">Kaufpreis</label>
-            <input type="number" id="kaufpreis" name="kaufpreis" inputmode="numeric" min="0" step="1000" value="350000" required />
+            <div class="currency-input-row">
+              <input type="text" id="kaufpreis" name="kaufpreis" inputmode="numeric" autocomplete="off" value="350000" required />
+              <span class="currency-suffix">€</span>
+            </div>
           </div>
 
           <div class="field">
             <label for="eigenkapital">Eigenkapital</label>
-            <input type="number" id="eigenkapital" name="eigenkapital" inputmode="numeric" min="0" step="1000" value="70000" />
+            <div class="currency-input-row">
+              <input type="text" id="eigenkapital" name="eigenkapital" inputmode="numeric" autocomplete="off" value="70000" />
+              <span class="currency-suffix">€</span>
+            </div>
           </div>
 
           <div class="field" id="courtage-field">

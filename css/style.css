@@ -569,6 +569,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
+  min-width: 0;
 }
 
 .calc-tabs {
@@ -695,6 +696,23 @@ input[type="range"] {
 .courtage-suffix {
   font-family: var(--font-mono);
   color: var(--color-walnuss);
+}
+
+.currency-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.currency-input-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.currency-suffix {
+  font-family: var(--font-mono);
+  color: var(--color-walnuss);
+  flex-shrink: 0;
 }
 
 #courtage-field.is-locked {
@@ -915,6 +933,7 @@ input[type="range"] {
 
 .estate-picker {
   position: relative;
+  min-width: 0;
 }
 
 .estate-picker input {
@@ -1018,6 +1037,7 @@ input[type="range"] {
   background: var(--color-reinweiss);
   border: 1px solid var(--color-sand);
   border-radius: 8px;
+  min-width: 0;
 }
 
 .selected-estate-preview[hidden] {
