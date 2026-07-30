@@ -2,6 +2,14 @@ const { buildAction, callOnOffice, getRecords } = require("../lib/onoffice");
 const { sendMail } = require("../lib/mailer");
 
 const ACTION_CREATE = "urn:onoffice-de-ns:smart:2.5:smartml:action:create";
+const ACTION_READ = "urn:onoffice-de-ns:smart:2.5:smartml:action:read";
+const ACTION_MODIFY = "urn:onoffice-de-ns:smart:2.5:smartml:action:modify";
+
+// "Interessent Parma Finanz" existiert noch nicht als Auswahlwert im Kontaktart-Feld
+// (onOffice-API-Feldname "ArtDaten") -- muss zuerst im onOffice-Backend als neue Option
+// angelegt werden, danach den dort erzeugten internen Schluessel hier als Env-Var eintragen.
+// Ohne gesetzten Wert wird die Kontaktart uebergangsweise einfach nicht gesetzt.
+const KONTAKTART_INTERESSENT_FINANZ = process.env.ONOFFICE_KONTAKTART_FINANZ_KEY;
 
 const ANLIEGEN_LABELS = {
   neukauf: "Neukauf",
@@ -62,6 +70,61 @@ function buildEmailText({ name, phone, email, anliegen, message, calc }) {
   return lines.join("\n");
 }
 
+// Mindeststandard fuer die Dublettenpruefung (auf Kundenwunsch): Telefonnummer + Name +
+// Vorname exakt uebereinstimmend, statt sich (wie onOffice es per checkDuplicate-Flag
+// standardmaessig macht) nur auf die E-Mail zu verlassen -- damit auch bereits bekannte
+// Adressen ohne hinterlegte E-Mail wiedergefunden werden. Ist keine Telefonnummer angegeben
+// (Formular erlaubt Telefon ODER E-Mail), wird ersatzweise nach der E-Mail gesucht.
+async function findDuplicateAddress({ phone, vorname, nachname, email }) {
+  const filter = {};
+  if (phone) {
+    filter.Telefon1 = [{ op: "=", val: phone }];
+    filter.Name = [{ op: "=", val: nachname }];
+    filter.Vorname = [{ op: "=", val: vorname }];
+  } else if (email) {
+    filter.Email = [{ op: "=", val: email }];
+  } else {
+    return null;
+  }
+
+  const action = buildAction({
+    actionid: ACTION_READ,
+    resourcetype: "address",
+    parameters: {
+      // "Id" ist beim Adressmodul KEIN gueltiges Datenfeld (im Unterschied zum Estate-Modul) --
+      // die Record-ID kommt bei getRecords() ohnehin immer automatisch ueber record.id mit,
+      // unabhaengig davon, was hier angefordert wird. Live gegen die API verifiziert: mit "Id"
+      // im data-Array schlaegt die Anfrage mit "Unknown field" fehl.
+      data: ["ArtDaten"],
+      filter,
+      listlimit: 1,
+    },
+  });
+  const results = await callOnOffice([action]);
+  const records = getRecords(results[0]);
+  return records[0] || null;
+}
+
+// Multiselect-Felder liefert onOffice bei read() als pipe-getrennten String (z.B.
+// "|Interessent Kauf|Käufer|"), nicht als Array -- live verifiziert ("Invalid multiselect
+// key" beim Zurueckschreiben, weil sonst der gesamte String samt Pipe-Zeichen als ein
+// einzelner, ungueltiger Schluessel behandelt wurde).
+function parseArtDaten(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value === "string") return value.split("|").map((s) => s.trim()).filter(Boolean);
+  return value ? [value] : [];
+}
+
+// ArtDaten ist ein Mehrfachauswahlfeld -- beim Aktualisieren eines bestehenden Kontakts sollen
+// vorhandene Kategorien (z.B. "Käufer Parma" aus dem Immobiliengeschäft) erhalten bleiben,
+// "Interessent Parma Finanz" wird nur ergaenzt statt alles zu ueberschreiben.
+function mergeArtDaten(existing, keyToAdd) {
+  if (!keyToAdd) return null;
+  const list = parseArtDaten(existing);
+  if (!list.includes(keyToAdd)) list.push(keyToAdd);
+  return list;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -102,28 +165,52 @@ module.exports = async (req, res) => {
   // Fehler hier wird daher nur geloggt, nicht an den Nutzer als Fehlschlag gemeldet.
   let addressId = null;
   try {
-    const addressAction = buildAction({
-      actionid: ACTION_CREATE,
-      resourcetype: "address",
-      parameters: {
-        Vorname: vorname,
-        Name: nachname,
-        email: email || undefined,
-        phone: phone || undefined,
-        default_phone: phone || undefined,
-        // checkDuplicate aktiviert die Dublettenpruefung ueberhaupt erst (onOffice prueft
-        // standardmaessig auf "email"; im Enterprise-Account ggf. zusaetzliche Kriterien).
-        // noOverrideByDuplicate bewusst NICHT gesetzt (Default false): wird eine Dublette
-        // gefunden, wird der bestehende Kontakt mit den neuen Angaben aktualisiert statt
-        // unveraendert zu bleiben -- bei einer erneuten Anfrage sind z.B. Telefonnummer/E-Mail
-        // dann aktuell.
-        checkDuplicate: true,
-      },
-    });
+    const duplicate = await findDuplicateAddress({ phone, vorname, nachname, email });
+    const artDaten = mergeArtDaten(duplicate ? duplicate.ArtDaten : null, KONTAKTART_INTERESSENT_FINANZ);
 
-    const addressResults = await callOnOffice([addressAction]);
-    const addressRecords = getRecords(addressResults[0]);
-    addressId = addressRecords[0] && addressRecords[0].id;
+    if (duplicate) {
+      // Bekannte Adresse gefunden (Telefon+Name+Vorname, oder ersatzweise E-Mail) --
+      // aktualisieren statt einen neuen, doppelten Datensatz anzulegen. E-Mail/Telefon werden
+      // hier bewusst NICHT mit aktualisiert: das sind bei onOffice Kommunikationsfelder mit
+      // eigenem Add/Edit-Format (nicht einfach ueberschreibbar wie z.B. ArtDaten) -- live
+      // verifiziert, dass ein einfacher Plain-Value-Modify dafuer fehlschlaegt bzw. bei
+      // "action: add" jedes Mal einen zusaetzlichen Eintrag anlegt statt den bestehenden zu
+      // ersetzen. ArtDaten ist dagegen ein normales Mehrfachauswahlfeld und per Modify direkt
+      // setzbar.
+      addressId = duplicate.id;
+
+      if (artDaten) {
+        await callOnOffice([
+          buildAction({
+            actionid: ACTION_MODIFY,
+            resourcetype: "address",
+            // Fuer "modify" erwartet onOffice die Record-ID als "resourceid" (NICHT
+            // "identifier"), und -- wie bei "create" -- KEINEN "data"-Wrapper um die Felder
+            // (beides live verifiziert; abweichende Formen scheitern mit "Unknown field"/
+            // "Missing or invalid attribute: resourceid").
+            resourceid: String(addressId),
+            parameters: { ArtDaten: artDaten },
+          }),
+        ]);
+      }
+    } else {
+      const addressAction = buildAction({
+        actionid: ACTION_CREATE,
+        resourcetype: "address",
+        parameters: {
+          Vorname: vorname,
+          Name: nachname,
+          email: email || undefined,
+          phone: phone || undefined,
+          default_phone: phone || undefined,
+          ...(artDaten ? { ArtDaten: artDaten } : {}),
+        },
+      });
+
+      const addressResults = await callOnOffice([addressAction]);
+      const addressRecords = getRecords(addressResults[0]);
+      addressId = addressRecords[0] && addressRecords[0].id;
+    }
 
     const taskParameters = {
       data: {

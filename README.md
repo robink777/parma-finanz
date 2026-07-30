@@ -88,6 +88,37 @@ läuft unabhängig davon und blockiert die Anfrage nicht mehr, falls sie einmal 
 4. Nach dem Deployment einmal über das echte Formular eine Testanfrage senden und prüfen, ob die
    Mail bei `info@parmafinanz.de` ankommt (ggf. auch im Spam-Ordner nachsehen).
 
+## Dublettenprüfung & Kontaktart
+
+`api/lead.js` prüft vor dem Anlegen einer neuen onOffice-Adresse selbst auf Dubletten (nicht mehr
+über onOffice's eingebautes `checkDuplicate`-Flag, das nur auf E-Mail matcht):
+
+- **Mindeststandard**: Telefonnummer + Name + Vorname exakt übereinstimmend (onOffice-Felder
+  `Telefon1`, `Name`, `Vorname`), damit auch bereits bekannte Adressen ohne hinterlegte E-Mail
+  wiedergefunden werden.
+- Ist keine Telefonnummer angegeben (Formular erlaubt Telefon *oder* E-Mail), wird ersatzweise
+  nach der E-Mail gesucht.
+- Wird eine Dublette gefunden, wird die bestehende Adresse verwendet (kein neuer Datensatz).
+  E-Mail/Telefon werden dabei bewusst **nicht** überschrieben – das sind bei onOffice
+  Kommunikationsfelder mit einem eigenen Add/Edit-Format, kein einfacher Plain-Value-Modify
+  (live verifiziert).
+
+Bei **jedem** Datensatz (neu angelegt oder als Dublette gefunden) wird die Kontaktart
+"Interessent Parma Finanz" übergeben (onOffice-Feld `ArtDaten`, Mehrfachauswahl – bestehende
+Kategorien wie z. B. "Käufer Parma" aus dem Immobiliengeschäft bleiben dabei erhalten, der neue
+Wert wird nur ergänzt).
+
+**Wichtig:** "Interessent Parma Finanz" existiert aktuell noch **nicht** als Auswahloption im
+`ArtDaten`-Feld. Damit die Kontaktart tatsächlich gesetzt wird:
+
+1. Im onOffice-Backend unter den Feldeinstellungen für Adressen ("Kontaktart"/`ArtDaten`) die
+   neue Option "Interessent Parma Finanz" anlegen.
+2. Den dabei erzeugten internen Schlüssel ermitteln (z. B. über die Feld-Definitionen abfragen)
+   und als `ONOFFICE_KONTAKTART_FINANZ_KEY` in `.env` bzw. in Vercel eintragen.
+
+Ohne gesetzten Wert läuft alles andere normal weiter (E-Mail-Versand, Dublettenprüfung,
+Adress-/Aufgabenanlage) – nur die Kontaktart wird übergangsweise nicht gesetzt.
+
 ## Deployment (Vercel + Strato-Domain)
 
 1. Projekt zu GitHub pushen (oder direkt via `vercel` CLI deployen).
@@ -112,3 +143,5 @@ läuft unabhängig davon und blockiert die Anfrage nicht mehr, falls sie einmal 
       hinterlegen, niemals ins Repo committen
 - [ ] SMTP-Zugangsdaten für den E-Mail-Versand einrichten (siehe Abschnitt
       "E-Mail-Versand einrichten") und mit einer echten Testanfrage verifizieren
+- [ ] Kontaktart "Interessent Parma Finanz" im onOffice-Backend anlegen und
+      `ONOFFICE_KONTAKTART_FINANZ_KEY` setzen (siehe Abschnitt "Dublettenprüfung & Kontaktart")
