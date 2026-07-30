@@ -5,10 +5,9 @@ const ACTION_CREATE = "urn:onoffice-de-ns:smart:2.5:smartml:action:create";
 const ACTION_READ = "urn:onoffice-de-ns:smart:2.5:smartml:action:read";
 const ACTION_MODIFY = "urn:onoffice-de-ns:smart:2.5:smartml:action:modify";
 
-// "Interessent Parma Finanz" existiert noch nicht als Auswahlwert im Kontaktart-Feld
-// (onOffice-API-Feldname "ArtDaten") -- muss zuerst im onOffice-Backend als neue Option
-// angelegt werden, danach den dort erzeugten internen Schluessel hier als Env-Var eintragen.
-// Ohne gesetzten Wert wird die Kontaktart uebergangsweise einfach nicht gesetzt.
+// Interner onOffice-Schluessel des Kontaktart-Werts "Interessent Parma Finanz" (Feld
+// ArtDaten, im onOffice-Backend angelegt: indMulti3498Select6688). Ohne gesetzten Wert
+// wuerde die Kontaktart einfach nicht gesetzt.
 const KONTAKTART_INTERESSENT_FINANZ = process.env.ONOFFICE_KONTAKTART_FINANZ_KEY;
 
 const ANLIEGEN_LABELS = {
@@ -16,12 +15,6 @@ const ANLIEGEN_LABELS = {
   anschlussfinanzierung: "Anschlussfinanzierung",
   modernisierung: "Modernisierung",
 };
-
-function splitName(fullName) {
-  const parts = String(fullName || "").trim().split(/\s+/);
-  if (parts.length === 1) return { vorname: "", name: parts[0] };
-  return { vorname: parts.slice(0, -1).join(" "), name: parts[parts.length - 1] };
-}
 
 function euro(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return null;
@@ -132,26 +125,29 @@ module.exports = async (req, res) => {
   }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-  const { name, phone, email, anliegen, message, calc, consent } = body;
+  // "vorname" und "name" (Nachname) kommen als getrennte Formularfelder -- wichtig fuer die
+  // Dublettenpruefung (Telefon+Name+Vorname), die auf exaktem Feldabgleich beruht und mit einem
+  // zusammengesetzten "Vor- und Nachname"-Feld unzuverlaessig waere (Mehrfachvornamen,
+  // Nachnamen mit Leerzeichen etc. liessen sich nicht zuverlaessig auftrennen).
+  const { vorname, name, phone, email, anliegen, message, calc, consent } = body;
+  const fullName = [vorname, name].filter(Boolean).join(" ");
 
   if (!consent) {
     res.status(400).json({ error: "Einwilligung zur Datenverarbeitung fehlt." });
     return;
   }
-  if (!name || (!phone && !email)) {
-    res.status(400).json({ error: "Name und mindestens Telefon oder E-Mail werden benötigt." });
+  if (!vorname || !name || (!phone && !email)) {
+    res.status(400).json({ error: "Vorname, Name und mindestens Telefon oder E-Mail werden benötigt." });
     return;
   }
-
-  const { vorname, name: nachname } = splitName(name);
 
   // Die E-Mail an info@parmafinanz.de ist die verbindliche Kernfunktion des Formulars --
   // schlaegt sie fehl, muss die Anfrage als fehlgeschlagen gelten, selbst wenn onOffice
   // (weiter unten) erreichbar waere. Deshalb zuerst und ohne Fallback versucht.
   try {
     await sendMail({
-      subject: `Finanzierungsanfrage: ${name}`,
-      text: buildEmailText({ name, phone, email, anliegen, message, calc }),
+      subject: `Finanzierungsanfrage: ${fullName}`,
+      text: buildEmailText({ name: fullName, phone, email, anliegen, message, calc }),
       replyTo: email || undefined,
     });
   } catch (mailErr) {
@@ -165,7 +161,7 @@ module.exports = async (req, res) => {
   // Fehler hier wird daher nur geloggt, nicht an den Nutzer als Fehlschlag gemeldet.
   let addressId = null;
   try {
-    const duplicate = await findDuplicateAddress({ phone, vorname, nachname, email });
+    const duplicate = await findDuplicateAddress({ phone, vorname, nachname: name, email });
     const artDaten = mergeArtDaten(duplicate ? duplicate.ArtDaten : null, KONTAKTART_INTERESSENT_FINANZ);
 
     if (duplicate) {
@@ -199,7 +195,7 @@ module.exports = async (req, res) => {
         resourcetype: "address",
         parameters: {
           Vorname: vorname,
-          Name: nachname,
+          Name: name,
           email: email || undefined,
           phone: phone || undefined,
           default_phone: phone || undefined,
@@ -214,7 +210,7 @@ module.exports = async (req, res) => {
 
     const taskParameters = {
       data: {
-        Betreff: `Finanzierungsanfrage: ${name}`,
+        Betreff: `Finanzierungsanfrage: ${fullName}`,
         Aufgabe: buildTaskDescription({ anliegen, message, calc }),
         Prio: 2,
         Status: 1,

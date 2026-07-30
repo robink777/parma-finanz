@@ -11,6 +11,7 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    var vorname = document.getElementById("c-vorname").value.trim();
     var name = document.getElementById("c-name").value.trim();
     var phone = document.getElementById("c-phone").value.trim();
     var email = document.getElementById("c-email").value.trim();
@@ -20,9 +21,9 @@
     status.dataset.state = "";
     status.textContent = "";
 
-    if (!name || (!phone && !email)) {
+    if (!vorname || !name || (!phone && !email)) {
       status.dataset.state = "error";
-      status.textContent = "Bitte Name sowie Telefon oder E-Mail angeben.";
+      status.textContent = "Bitte Vorname, Name sowie Telefon oder E-Mail angeben.";
       return;
     }
     if (!consent) {
@@ -41,6 +42,7 @@
     }
 
     var payload = {
+      vorname: vorname,
       name: name,
       phone: phone,
       email: email,

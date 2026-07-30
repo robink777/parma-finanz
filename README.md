@@ -95,7 +95,10 @@ läuft unabhängig davon und blockiert die Anfrage nicht mehr, falls sie einmal 
 
 - **Mindeststandard**: Telefonnummer + Name + Vorname exakt übereinstimmend (onOffice-Felder
   `Telefon1`, `Name`, `Vorname`), damit auch bereits bekannte Adressen ohne hinterlegte E-Mail
-  wiedergefunden werden.
+  wiedergefunden werden. Das Kontaktformular hat dafür getrennte Felder für Vorname und
+  Nachname (kein zusammengesetztes "Name"-Feld) – ein automatisches Auftrennen wäre bei
+  Mehrfachvornamen oder Nachnamen mit Leerzeichen nicht zuverlässig genug für den exakten
+  Feldabgleich.
 - Ist keine Telefonnummer angegeben (Formular erlaubt Telefon *oder* E-Mail), wird ersatzweise
   nach der E-Mail gesucht.
 - Wird eine Dublette gefunden, wird die bestehende Adresse verwendet (kein neuer Datensatz).
@@ -108,15 +111,12 @@ Bei **jedem** Datensatz (neu angelegt oder als Dublette gefunden) wird die Konta
 Kategorien wie z. B. "Käufer Parma" aus dem Immobiliengeschäft bleiben dabei erhalten, der neue
 Wert wird nur ergänzt).
 
-**Wichtig:** "Interessent Parma Finanz" existiert aktuell noch **nicht** als Auswahloption im
-`ArtDaten`-Feld. Damit die Kontaktart tatsächlich gesetzt wird:
+"Interessent Parma Finanz" ist im onOffice-Backend als Auswahloption angelegt (interner
+Schlüssel `indMulti3498Select6688`), hinterlegt als `ONOFFICE_KONTAKTART_FINANZ_KEY` in
+`.env`/Vercel.
 
-1. Im onOffice-Backend unter den Feldeinstellungen für Adressen ("Kontaktart"/`ArtDaten`) die
-   neue Option "Interessent Parma Finanz" anlegen.
-2. Den dabei erzeugten internen Schlüssel ermitteln (z. B. über die Feld-Definitionen abfragen)
-   und als `ONOFFICE_KONTAKTART_FINANZ_KEY` in `.env` bzw. in Vercel eintragen.
-
-Ohne gesetzten Wert läuft alles andere normal weiter (E-Mail-Versand, Dublettenprüfung,
+Ohne gesetzten Wert (z. B. in einer neuen Umgebung ohne diese Env-Var) läuft alles andere
+normal weiter (E-Mail-Versand, Dublettenprüfung,
 Adress-/Aufgabenanlage) – nur die Kontaktart wird übergangsweise nicht gesetzt.
 
 ## Deployment (Vercel + Strato-Domain)
@@ -143,5 +143,5 @@ Adress-/Aufgabenanlage) – nur die Kontaktart wird übergangsweise nicht gesetz
       hinterlegen, niemals ins Repo committen
 - [ ] SMTP-Zugangsdaten für den E-Mail-Versand einrichten (siehe Abschnitt
       "E-Mail-Versand einrichten") und mit einer echten Testanfrage verifizieren
-- [ ] Kontaktart "Interessent Parma Finanz" im onOffice-Backend anlegen und
+- [x] Kontaktart "Interessent Parma Finanz" im onOffice-Backend anlegen und
       `ONOFFICE_KONTAKTART_FINANZ_KEY` setzen (siehe Abschnitt "Dublettenprüfung & Kontaktart")
