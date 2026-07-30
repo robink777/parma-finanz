@@ -131,6 +131,10 @@ module.exports = async (req, res) => {
         Aufgabe: buildTaskDescription({ anliegen, message, calc }),
         Prio: 2,
         Status: 1,
+        // "Art" (Aktionstyp) ist bei onOffice ein Pflichtfeld fuer Aufgaben -- ohne es schlaegt
+        // die Erstellung mit "Missing mandatory field" fehl. 167 = "To Do" (Aktionsart 5,
+        // "Aufgabe"), der generischste passende Typ fuer eine neue Anfrage.
+        Art: 167,
       },
     };
     if (addressId) taskParameters.relatedAddressId = addressId;
