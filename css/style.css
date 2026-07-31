@@ -1249,28 +1249,14 @@ input[type="range"] {
 
 /* ---------- Team ---------- */
 
-.team-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-4);
-  margin-top: var(--sp-4);
-  max-width: 720px;
-}
-
-@media (min-width: 769px) {
-  .team-grid {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: none;
-  }
-}
-
 .team-card {
+  flex: 0 0 220px;
+  scroll-snap-align: start;
   text-align: center;
 }
 
 .team-photo {
   width: 100%;
-  max-width: 220px;
   aspect-ratio: 4 / 5;
   object-fit: cover;
   border-radius: 8px;

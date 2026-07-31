@@ -499,22 +499,26 @@
       <p class="label">Team</p>
       <h2>Ihr Team bei Parma Finanz</h2>
       <p class="section-intro">Ihre Ansprechpartner – persönlich, verbindlich, erreichbar.</p>
-      <div class="team-grid">
-        <div class="team-card">
-          <img src="assets/bilder/team-axel.jpg" alt="Axel Wehmeier" class="team-photo" />
-          <h3>Axel Wehmeier</h3>
-          <p class="label">Bankkaufmann</p>
+      <div class="slider" id="team-slider">
+        <button type="button" class="slider-nav slider-prev" aria-label="Vorheriges Teammitglied">‹</button>
+        <div class="slider-track" id="team-slider-track">
+          <div class="team-card">
+            <img src="assets/bilder/team-robin.jpg" alt="Robin Kolbe" class="team-photo" />
+            <h3>Robin Kolbe</h3>
+            <p class="label">Gründer &amp; Geschäftsführer</p>
+          </div>
+          <div class="team-card">
+            <img src="assets/bilder/team-daniel.jpg" alt="Daniel Parma" class="team-photo" />
+            <h3>Daniel Parma</h3>
+            <p class="label">Gründer &amp; Geschäftsführer</p>
+          </div>
+          <div class="team-card">
+            <img src="assets/bilder/team-axel.jpg" alt="Axel Wehmeier" class="team-photo" />
+            <h3>Axel Wehmeier</h3>
+            <p class="label">Bankkaufmann</p>
+          </div>
         </div>
-        <div class="team-card">
-          <img src="assets/bilder/team-daniel.jpg" alt="Daniel Parma" class="team-photo" />
-          <h3>Daniel Parma</h3>
-          <p class="label">Gründer &amp; Geschäftsführer</p>
-        </div>
-        <div class="team-card">
-          <img src="assets/bilder/team-robin.jpg" alt="Robin Kolbe" class="team-photo" />
-          <h3>Robin Kolbe</h3>
-          <p class="label">Gründer &amp; Geschäftsführer</p>
-        </div>
+        <button type="button" class="slider-nav slider-next" aria-label="Nächstes Teammitglied">›</button>
       </div>
     </div>
   </section>
@@ -568,6 +572,7 @@
 </footer>
 
 <script src="js/slider.js"></script>
+<script src="js/team-slider.js"></script>
 <script src="js/calculator.js"></script>
 <script src="js/form.js"></script>
 </body>
