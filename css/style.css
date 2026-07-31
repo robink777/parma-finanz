@@ -1247,32 +1247,39 @@ input[type="range"] {
   color: #a1382f;
 }
 
-/* ---------- Social Proof ---------- */
+/* ---------- Team ---------- */
 
-.proof-grid {
+.team-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--sp-3);
+  gap: var(--sp-4);
   margin-top: var(--sp-4);
+  max-width: 720px;
 }
 
 @media (min-width: 769px) {
-  .proof-grid {
+  .team-grid {
     grid-template-columns: repeat(3, 1fr);
+    max-width: none;
   }
 }
 
-.proof-card {
-  background: var(--color-stein);
-  border-radius: 10px;
-  padding: var(--sp-3);
-  box-shadow: var(--shadow-sm);
+.team-card {
+  text-align: center;
 }
 
-.proof-card .stars {
-  color: var(--color-messing);
-  font-family: var(--font-mono);
-  margin-bottom: var(--sp-1);
+.team-photo {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto var(--sp-2);
+  display: block;
+}
+
+.team-card h3 {
+  margin-bottom: 4px;
 }
 
 /* ---------- FAQ ---------- */
