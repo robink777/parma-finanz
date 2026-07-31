@@ -39,13 +39,17 @@ function buildCalcLines(calc) {
 
 // onOffice bietet das "Deals"-Modul (Pipeline/Vertriebsprozess) aktuell noch nicht ueber die
 // API an (live geprueft, Juli 2026) -- ein Deal kann also nicht automatisch angelegt werden.
-// Diese Zeilen sind deshalb die Handlungsanweisung fuer den Vertriebler, das manuell in
-// onOffice nachzuholen (der Kontakt/die Adresse wird weiterhin automatisch angelegt, siehe
-// unten -- nur die Aufgabe/der Deal selbst nicht mehr).
+// Die Verknuepfung der Mail mit der Adresse laeuft ueber das onOffice-Outlook-Add-in
+// ("Zuordnen/Anlegen" direkt in der E-Mail), ebenfalls ein manueller Schritt. Diese Zeilen
+// sind deshalb die Handlungsanweisung fuer den Vertriebler, beides manuell nachzuholen (der
+// Kontakt/die Adresse wird weiterhin automatisch in onOffice angelegt, siehe unten -- nur die
+// Mail-Verknuepfung und der Deal selbst nicht).
 function buildHandlungsanweisung() {
-  return ["Sie haben eine Finanzierungsanfrage erhalten.", "Bitte erstellen Sie einen neuen Deal.", "Deal anlegen -> Finanzierungen"].join(
-    "\n"
-  );
+  return [
+    "Sie haben eine Finanzierungsanfrage erhalten.",
+    "Bitte ordnen Sie diese E-Mail der Adresse zu -> Zuordnen/Anlegen",
+    "Bitte erstellen Sie einen neuen Deal -> Deal anlegen -> Finanzierungen",
+  ].join("\n");
 }
 
 // Der E-Mail-Text enthaelt (anders als der onOffice-Datensatz) auch die Kontaktdaten direkt --
