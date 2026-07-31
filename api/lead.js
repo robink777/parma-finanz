@@ -37,22 +37,25 @@ function buildCalcLines(calc) {
   return lines;
 }
 
-function buildTaskDescription({ anliegen, message, calc }) {
-  const lines = [];
-  lines.push(`Anliegen: ${ANLIEGEN_LABELS[anliegen] || anliegen || "unbekannt"}`);
-  if (message) lines.push(`Nachricht: ${message}`);
-  lines.push(...buildCalcLines(calc));
-  lines.push("");
-  lines.push("Quelle: Kontaktformular parmafinanz.de");
-  return lines.join("\n");
+// onOffice bietet das "Deals"-Modul (Pipeline/Vertriebsprozess) aktuell noch nicht ueber die
+// API an (live geprueft, Juli 2026) -- ein Deal kann also nicht automatisch angelegt werden.
+// Diese Zeilen sind deshalb die Handlungsanweisung fuer den Vertriebler, das manuell in
+// onOffice nachzuholen (der Kontakt/die Adresse wird weiterhin automatisch angelegt, siehe
+// unten -- nur die Aufgabe/der Deal selbst nicht mehr).
+function buildHandlungsanweisung() {
+  return ["Sie haben eine Finanzierungsanfrage erhalten.", "Bitte erstellen Sie einen neuen Deal.", "Deal anlegen -> Finanzierungen"].join(
+    "\n"
+  );
 }
 
-// Der E-Mail-Text enthaelt (anders als die onOffice-Aufgabe) auch die Kontaktdaten direkt --
+// Der E-Mail-Text enthaelt (anders als der onOffice-Datensatz) auch die Kontaktdaten direkt --
 // wer die Mail liest, hat sonst keinen unmittelbaren CRM-Zugriff und soll trotzdem sofort
 // zurueckrufen/-schreiben koennen.
 function buildEmailText({ name, phone, email, anliegen, message, calc }) {
   const lines = [];
-  lines.push("Neue Finanzierungsanfrage über parmafinanz.de");
+  lines.push(buildHandlungsanweisung());
+  lines.push("");
+  lines.push("---");
   lines.push("");
   lines.push(`Name: ${name}`);
   if (phone) lines.push(`Telefon: ${phone}`);
@@ -156,8 +159,9 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // onOffice-Uebertragung (Adresse + Aufgabe) ist Komfort fuer die CRM-Pflege, aber nicht
-  // mehr die Bedingung fuer eine erfolgreiche Anfrage -- die Mail ist bereits raus. Ein
+  // onOffice-Uebertragung (nur noch Adresse, KEINE Aufgabe mehr -- der Deal wird laut
+  // Handlungsanweisung in der Mail manuell angelegt) ist Komfort fuer die CRM-Pflege, aber
+  // nicht mehr die Bedingung fuer eine erfolgreiche Anfrage -- die Mail ist bereits raus. Ein
   // Fehler hier wird daher nur geloggt, nicht an den Nutzer als Fehlschlag gemeldet.
   let addressId = null;
   try {
@@ -207,33 +211,6 @@ module.exports = async (req, res) => {
       const addressRecords = getRecords(addressResults[0]);
       addressId = addressRecords[0] && addressRecords[0].id;
     }
-
-    const taskParameters = {
-      data: {
-        Betreff: `Finanzierungsanfrage: ${fullName}`,
-        Aufgabe: buildTaskDescription({ anliegen, message, calc }),
-        Prio: 2,
-        Status: 1,
-        // "Art" (Aktionstyp) ist bei onOffice ein Pflichtfeld fuer Aufgaben -- ohne es schlaegt
-        // die Erstellung mit "Missing mandatory field" fehl. 167 = "To Do" (Aktionsart 5,
-        // "Aufgabe"), der generischste passende Typ fuer eine neue Anfrage.
-        Art: 167,
-      },
-    };
-    if (addressId) taskParameters.relatedAddressId = addressId;
-    const assignee = process.env.ONOFFICE_TASK_ASSIGNEE_LOGIN;
-    if (assignee) {
-      taskParameters.data.Verantwortung = assignee;
-      taskParameters.data.Bearbeiter = assignee;
-    }
-
-    await callOnOffice([
-      buildAction({
-        actionid: ACTION_CREATE,
-        resourcetype: "task",
-        parameters: taskParameters,
-      }),
-    ]);
   } catch (onofficeErr) {
     console.error("api/lead: onOffice-Übertragung fehlgeschlagen:", onofficeErr);
   }

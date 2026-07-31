@@ -15,7 +15,7 @@ css/style.css          CI-konformes Stylesheet (Parma-Design-Skill)
 js/calculator.js       Rechner-Logik + Objektauswahl (ruft /api/estates)
 js/form.js              Kontaktformular (ruft /api/lead)
 api/estates.js          Vercel Function: liest freigegebene Immobilien aus onOffice
-api/lead.js             Vercel Function: legt Adresse + Aufgabe in onOffice an
+api/lead.js             Vercel Function: schickt Anfrage-Mail, legt Adresse in onOffice an
 lib/onoffice.js         HMAC-v2-Signierung + onOffice-API-Client
 assets/logos/           Original-Logo-Dateien (Parma Finanz + Parma Immobilien)
 ```
@@ -53,10 +53,6 @@ Formularversand melden aber einen Fehler, weil `/api/*` fehlt.
    CRM-seitig aktiv, aber nicht für die eigene Website freigegeben waren. `status2` ist **kein**
    verlässliches Online/Offline-Kriterium (CRM-Workflow-Feld, u.a. auch bei veröffentlichten
    Objekten leer oder "reserviert").
-5. Optional: `ONOFFICE_TASK_ASSIGNEE_LOGIN` setzen (loginName aus onOffice, z. B. `Robin`), damit
-   neue Leads automatisch als Aufgabe einem Berater zugewiesen werden. Leer lassen für
-   Standard-Zuweisung.
-
 Die Signierung (HMAC-Version 2) und das Request-/Response-Format in `lib/onoffice.js` sind gegen
 die offizielle Doku unter apidoc.onoffice.de verifiziert, aber **noch nicht gegen einen echten
 Request mit euren neuen Zugangsdaten getestet** – bitte nach dem Deployment einmal `/api/estates`
@@ -67,8 +63,14 @@ aufrufen und die Rückgabe prüfen.
 Das Kontaktformular (`api/lead.js`) verschickt bei jeder Anfrage verbindlich eine E-Mail an
 `info@parmafinanz.de` (`lib/mailer.js`, per SMTP über ein bestehendes Strato-Postfach –
 kein zusätzlicher Anbieter/Signup nötig). Schlägt der E-Mail-Versand fehl, gilt die Anfrage als
-fehlgeschlagen (Fehlermeldung im Formular); die optionale onOffice-Übertragung (Adresse + Aufgabe)
-läuft unabhängig davon und blockiert die Anfrage nicht mehr, falls sie einmal nicht erreichbar ist.
+fehlgeschlagen (Fehlermeldung im Formular); die optionale onOffice-Übertragung (nur noch die
+Adresse, siehe Abschnitt "Dublettenprüfung & Kontaktart") läuft unabhängig davon und blockiert
+die Anfrage nicht mehr, falls sie einmal nicht erreichbar ist.
+
+Die Mail enthält oben eine Handlungsanweisung für den Vertriebler ("Bitte erstellen Sie einen
+neuen Deal. Deal anlegen -> Finanzierungen"), da onOffice sein neues Deals-Modul (Pipeline für
+den Vertriebsprozess) noch nicht über die API anbietet (live geprüft, Juli 2026) – der Deal muss
+also manuell in onOffice angelegt werden.
 
 1. Ein Postfach bestimmen, über das versendet wird (z. B. `info@parmafinanz.de` selbst, oder ein
    separates Versand-Postfach bei Strato).
@@ -116,8 +118,11 @@ Schlüssel `indMulti3498Select6688`), hinterlegt als `ONOFFICE_KONTAKTART_FINANZ
 `.env`/Vercel.
 
 Ohne gesetzten Wert (z. B. in einer neuen Umgebung ohne diese Env-Var) läuft alles andere
-normal weiter (E-Mail-Versand, Dublettenprüfung,
-Adress-/Aufgabenanlage) – nur die Kontaktart wird übergangsweise nicht gesetzt.
+normal weiter (E-Mail-Versand, Dublettenprüfung, Adressanlage) – nur die Kontaktart wird
+übergangsweise nicht gesetzt.
+
+Es wird bewusst **keine onOffice-Aufgabe** mehr angelegt – nur die Adresse. Der nächste Schritt
+(Deal anlegen) erfolgt manuell durch den Vertriebler anhand der Handlungsanweisung in der Mail.
 
 ## Deployment (Vercel + Strato-Domain)
 
