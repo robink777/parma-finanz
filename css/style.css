@@ -1268,6 +1268,23 @@ input[type="range"] {
   margin-bottom: 4px;
 }
 
+/* Ab Tablet/Desktop passen alle drei Karten nebeneinander -- dann lieber die volle Breite
+   gleichmaessig ausnutzen (wie ein Grid) statt schmaler Slider-Karten mit Leerraum rechts.
+   Der horizontale Swipe-Slider bleibt ausschliesslich der Mobile-Ansicht vorbehalten. */
+@media (min-width: 769px) {
+  #team-slider .slider-nav {
+    display: none;
+  }
+
+  #team-slider .slider-track {
+    overflow: visible;
+  }
+
+  #team-slider .team-card {
+    flex: 1;
+  }
+}
+
 /* ---------- FAQ ---------- */
 
 .faq-item {
