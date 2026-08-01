@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "parmafinanz.de" }],
+      "destination": "https://www.parmafinanz.de/$1",
+      "permanent": true
+    }
+  ]
+}
